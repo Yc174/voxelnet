@@ -226,7 +226,7 @@ __C.RNG_SEED = 3
 __C.ROOT_DIR = osp.abspath(osp.join(osp.dirname(__file__), '..'))
 
 # Data directory
-__C.DATA_DIR = osp.abspath(osp.join(__C.ROOT_DIR, 'data'))
+__C.DATA_DIR = osp.abspath(osp.join(__C.ROOT_DIR, 'datasets'))
 
 
 # Place outputs under an experiments directory

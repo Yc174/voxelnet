@@ -9,9 +9,7 @@ import sys
 import numpy as np
 import cv2
 import time
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.join(BASE_DIR, '../..')
-sys.path.append(BASE_DIR)
+
 from kitti_object import *
 import experiments.config as cfg
 
@@ -98,7 +96,7 @@ class Dataloader():
 
 if __name__ == '__main__':
     cfg = cfg.cfg
-    data = Dataloader(cfg)
+    data = Dataloader(cfg, split="training")
     for i in range(10):
         minibatch = data.forward()
         print('*'*20, 'the %d batch'%(i), '*'*20)

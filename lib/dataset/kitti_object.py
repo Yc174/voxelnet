@@ -11,9 +11,9 @@ import numpy as np
 import cv2
 from PIL import Image
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(BASE_DIR)
-sys.path.append(os.path.join(ROOT_DIR, 'mayavi'))
-import kitti_util as utils
+ROOT_DIR = os.path.join(BASE_DIR, '../..')
+sys.path.append(os.path.join(ROOT_DIR, 'lib', 'mayavi'))
+import lib.dataset.kitti_util as utils
 
 try:
     raw_input          # Python 2
@@ -213,7 +213,7 @@ def show_lidar_on_image(pc_velo, img, calib, img_width, img_height):
     return img
 
 def dataset_viz():
-    dataset = kitti_object(os.path.join(ROOT_DIR, 'dataset/KITTI/object'))
+    dataset = kitti_object(os.path.join(ROOT_DIR, 'datasets/KITTI/object'))
 
     for data_idx in range(len(dataset)):
         # Load data from dataset
