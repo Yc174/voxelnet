@@ -1,0 +1,1 @@
+python tools/train.py --config=config.json
