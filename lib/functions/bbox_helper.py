@@ -88,6 +88,32 @@ def compute_loc_targets(raw_bboxes, gt_bboxes):
     trgt_h = np.log(gt[:, 3] / bb[:, 3])
     return np.vstack([trgt_ctr_x, trgt_ctr_y, trgt_w, trgt_h]).transpose()
 
+def compute_loc_targets_3d(raw_bboxes, gt_bboxes):
+    '''
+    :argument
+        raw_bboxes, gt_bboxes:[N, k] first dim must be equal
+        raw_bboxes in the format N * [x, y, z, l, w, h, ry]
+        gt_bboxes in the format N * [x, y, z, l, w, h, ry]
+    :returns
+        loc_targets:[N, 7]
+    '''
+    # assert raw_bboxes.shape[-1]==7 and gt_bboxes.shape[-1]==7,
+    print(raw_bboxes.shape, gt_bboxes.shape)
+    l_a = raw_bboxes[:, 3]
+    w_a = raw_bboxes[:, 4]
+    h_a = raw_bboxes[:, 5]
+    l_g = gt_bboxes[:, 3]
+    w_g = gt_bboxes[:, 4]
+    h_g = gt_bboxes[:, 5]
+    d_a = np.sqrt(l_a*l_a + w_a*w_a)
+    trgt_ctr_x = (gt_bboxes[:, 0] - raw_bboxes[:, 0]) / d_a
+    trgt_ctr_y = (gt_bboxes[:, 1] - raw_bboxes[:, 1]) / h_a
+    trgt_ctr_z = (gt_bboxes[:, 2] - raw_bboxes[:, 2]) / d_a
+    trgt_l = np.log(l_g / l_a)
+    trgt_w = np.log(w_g / w_a)
+    trgt_h = np.log(h_g / h_a)
+    trgt_theta = gt_bboxes[:, 6]- raw_bboxes[:, 6]
+    return np.vstack([trgt_ctr_x, trgt_ctr_y, trgt_ctr_z, trgt_l, trgt_w, trgt_h, trgt_theta]).transpose()
 
 def compute_loc_bboxes(raw_bboxes, deltas):
     '''

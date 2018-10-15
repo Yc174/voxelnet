@@ -19,7 +19,8 @@ def get_anchors_over_plane(featmap_h, featmap_w, area_extents, anchor_3d_sizes, 
     z_end = area_extents[2][0]
     z_centers = np.array(np.arange(z_start, z_end, step=-anchor_stride_z),
                          dtype=np.float32)
-
+    print("x shape:", len(x_centers), x_centers)
+    print("z shape:", len(z_centers), z_centers)
     # get anchors on one grid
     anchors = get_anchors(anchor_3d_sizes, anchor_rotations)
     # spread anchors over each grid

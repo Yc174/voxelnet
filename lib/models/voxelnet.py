@@ -29,16 +29,16 @@ class VFE(nn.Module):
         batch, channel, voxels, num_T = x.size()
         out = self.fcn1(x)
         point_wise_feature = F.max_pool2d(out, kernel_size=[1, num_T], stride=[1, num_T])
-        # print('point_wise_feature size:', point_wise_feature.size())
+        print('point_wise_feature size:', point_wise_feature.size())
         out = torch.cat((out, point_wise_feature.repeat(1, 1, 1, num_T)), 1)
-        # print('VFE size:', out.size())
+        print('VFE size:', out.size())
         return out
 
 class Conv_Middle_layers(nn.Module):
     def __init__(self, ):
         super(Conv_Middle_layers, self).__init__()
         self.conv1 = Conv3d(128, 64, stride=(2, 1, 1), padding=(1, 1, 1))
-        self.conv2 = Conv3d(64, 64, stride=(1, 1, 1), padding=(0, 1, 1))
+        self.conv2 = Conv3d(64, 64, stride=(1, 1, 1), padding=(1, 1, 1))
         self.conv3 = Conv3d(64, 64, stride=(2, 1, 1), padding=(1, 1, 1))
 
     def forward(self, x):

@@ -23,7 +23,8 @@ class KittiDataset(Dataset):
             idx_filename = os.path.join(os.path.dirname(__file__), idx_filename)
         self.img_ids = [int(line.rstrip()) for line in open(idx_filename)]
 
-        self.names = ['car', 'pedestrian', 'cyclist']
+        # self.names = {'Car': 1, 'Pedestrian': 2, 'Cyclist': 3}
+        self.names = {'Car': 1}
         self.num = len(self.img_ids)
 
     def __len__(self):
@@ -39,10 +40,15 @@ class KittiDataset(Dataset):
         bboxes_3d = []
         for object in label_objects:
             box3d = utils.object_label_to_box_3d(object)
+            if object.type not in self.names.keys():
+                continue
+            # ty = self.names[object.type]
+            # box3d = np.append(box3d, ty)
             bboxes_2d.append(object.box2d)
             bboxes_3d.append(box3d)
         bboxes_2d = np.asarray(bboxes_2d)
         bboxes_3d = np.asarray(bboxes_3d)
+        # print(bboxes_3d[:, 3:])
 
         pc_rect = np.zeros_like(pc_velo)
         pc_rect[:, 0:3] = calib.project_velo_to_rect(pc_velo[:, 0:3])
@@ -154,14 +160,14 @@ class KittiDataloader(DataLoader):
         padded_voxel_indices = torch.from_numpy(np.stack(padded_voxel_indices, axis=0))
         voxel = torch.from_numpy(np.array(s_voxel))
 
-        print("padded img size:", padded_images.size())
+        # print("padded img size:", padded_images.size())
         print("padded gt_bboxes_3d size", padded_gt_bboxes_3d.size())
-        print("padded points size:", padded_points.size())
-        print("padded indices size:", padded_indices.size())
-        print("padded num_pts size:", padded_num_pts.size())
-        print("leaf_out size:", leaf_out.size())
-        print("padded voxel indices:", padded_voxel_indices.size())
-        print("voxel shape:", voxel.size())
+        # print("padded points size:", padded_points.size())
+        # print("padded indices size:", padded_indices.size())
+        # print("padded num_pts size:", padded_num_pts.size())
+        # print("leaf_out size:", leaf_out.size())
+        # print("padded voxel indices:", padded_voxel_indices.size())
+        # print("voxel shape:", voxel.size())
 
         return padded_images, padded_points, padded_indices, padded_num_pts, leaf_out, padded_voxel_indices, voxel, padded_gt_bboxes_2d, padded_gt_bboxes_3d
 

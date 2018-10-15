@@ -130,7 +130,7 @@ def compute_anchor_targets(feature_size, cfg, ground_truth_bboxes, image_info, i
 
         pos_target_ix = argmax_overlaps[pos_b_ix, pos_ka_ix]
         pos_target_gt = ground_truth_bboxes[pos_b_ix, pos_target_ix]
-        pos_loc_targets = bbox_helper.compute_loc_targets(pos_anchors, pos_target_gt)
+        pos_loc_targets = bbox_helper.compute_loc_targets_3d(pos_anchors, pos_target_gt)
 
         loc_targets[pos_b_ix, pos_ka_ix, :] = pos_loc_targets
         # loc_weights = np.zeros([B, K*A, 4])

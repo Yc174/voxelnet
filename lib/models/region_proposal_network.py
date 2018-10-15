@@ -54,9 +54,9 @@ class RPN(nn.Module):
         self.conv3_4 = Conv2d(256, 256, 1, padding=(1, 1))
         self.conv3_5 = Conv2d(256, 256, 1, padding=(1, 1))
 
-        self.deconv1 = nn.ConvTranspose2d(256, 256, 4, 4, 0)
-        self.deconv2 = nn.ConvTranspose2d(128, 256, 2, 2, 0)
-        self.deconv3 = nn.ConvTranspose2d(128, 256, 3, 1, 0)
+        self.deconv1 = nn.ConvTranspose2d(256, 256, 4, 4, (0, 1), (0, 1))
+        self.deconv2 = nn.ConvTranspose2d(128, 256, 2, 2, (0, 1), (0, 1))
+        self.deconv3 = nn.ConvTranspose2d(128, 256, 3, 1, 1)
 
         self.rpn_head = NaiveRpnHead(256*3, num_classes, num_anchors)
 
@@ -88,6 +88,6 @@ class RPN(nn.Module):
         print('deconv1 shape:', deconv1.size())
         print('deconv2 shape:', deconv2.size())
         print('deconv3 shape:', deconv3.size())
-        out = torch.cat((deconv1, deconv2, deconv2), 1) ###################
+        out = torch.cat((deconv1, deconv2, deconv3), 1) ###################
         rpn_pred_cls, rpn_pred_loc = self.rpn_head(out)
         return rpn_pred_cls, rpn_pred_loc
