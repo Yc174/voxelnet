@@ -97,19 +97,20 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
             'gt_bboxes_3d': input[8],
         }
         outputs = model(x)
-        # rpn_cls_loss = outputs['losses'][0]
-        # rpn_loc_loss = outputs['losses'][1]
-        # all_rpn_cls_loss = sum(rpn_cls_loss)
-        # all_rpn_loc_loss = sum(rpn_loc_loss)
-        # rpn_cls_loss_value = all_rpn_cls_loss.cpu().data[0]
-        # rpn_loc_loss_value = all_rpn_loc_loss.cpu().data[0]
-        #
-        # loss = all_rpn_cls_loss+all_rpn_loc_loss
-        # loss_value = loss.cpu().data[0]
-        #
-        # optimizer.zero_grad()
-        # loss.backward()
-        # optimizer.step()
+        rpn_cls_loss = outputs['losses'][0]
+        rpn_loc_loss = outputs['losses'][1]
+        print('rpn_cls_loss :', rpn_cls_loss)
+        print('rpn_loc_loss :', rpn_loc_loss)
+
+        rpn_cls_loss_value = rpn_cls_loss.data[0]
+        rpn_loc_loss_value = rpn_loc_loss.data[0]
+
+        loss = rpn_cls_loss + rpn_loc_loss
+        loss_value = loss.data[0]
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
         print('Epoch: [%d][%d/%d]'%(epoch, iter, len(dataloader)))
 

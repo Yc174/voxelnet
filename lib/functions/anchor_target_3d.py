@@ -80,6 +80,7 @@ def compute_anchor_targets(feature_size, cfg, ground_truth_bboxes, image_info, i
         else:
             raise ValueError('Invalid rpn_iou_type {}', rpn_iou_type)
 
+        ground_truth_bboxes = ground_truth_bboxes.reshape(B, G, -1)
 
         # shape of [B, K*A]
         argmax_overlaps = overlaps.argmax(axis = 2)
@@ -122,8 +123,8 @@ def compute_anchor_targets(feature_size, cfg, ground_truth_bboxes, image_info, i
         remove_ix = np.random.choice(num_negatives, size = num_negatives - num_neg_sampling, replace = False)
         labels[neg_b_ix[remove_ix], neg_ka_ix[remove_ix]] = -1
 
-    loc_targets = np.zeros([B, K*A, 4], dtype=np.float32)
-    loc_masks = np.zeros([B, K*A, 4], dtype=np.float32)
+    loc_targets = np.zeros([B, K*A, 7], dtype=np.float32)
+    loc_masks = np.zeros([B, K*A, 7], dtype=np.float32)
     if G != 0:
         pos_b_ix, pos_ka_ix = np.where(labels > 0)
         pos_anchors = anchors_overplane[pos_ka_ix, :]
@@ -140,9 +141,9 @@ def compute_anchor_targets(feature_size, cfg, ground_truth_bboxes, image_info, i
     cls_targets = Variable(
         torch.from_numpy(labels).long().view(B, featmap_h, featmap_w, A).permute(0, 3, 1, 2)).cuda().contiguous()
     loc_targets = Variable(
-        torch.from_numpy(loc_targets).float().view(B, featmap_h, featmap_w, A * 4).permute(0, 3, 1, 2)).cuda().contiguous()
+        torch.from_numpy(loc_targets).float().view(B, featmap_h, featmap_w, A * 7).permute(0, 3, 1, 2)).cuda().contiguous()
     loc_masks = Variable(
-        torch.from_numpy(loc_masks).float().view(B, featmap_h, featmap_w, A * 4).permute(0, 3, 1, 2)).cuda().contiguous()
+        torch.from_numpy(loc_masks).float().view(B, featmap_h, featmap_w, A * 7).permute(0, 3, 1, 2)).cuda().contiguous()
     loc_nomalizer = max(1,len(np.where(labels >= 0)[0]))
     logger.debug('positive anchors:%d' % len(pos_b_ix))
     return cls_targets, loc_targets, loc_masks, loc_nomalizer

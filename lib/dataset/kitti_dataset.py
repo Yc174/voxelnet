@@ -46,8 +46,8 @@ class KittiDataset(Dataset):
             # box3d = np.append(box3d, ty)
             bboxes_2d.append(object.box2d)
             bboxes_3d.append(box3d)
-        bboxes_2d = np.asarray(bboxes_2d)
-        bboxes_3d = np.asarray(bboxes_3d)
+        bboxes_2d = np.asarray(bboxes_2d).reshape(-1, 4)
+        bboxes_3d = np.asarray(bboxes_3d).reshape(-1, 7)
         # print(bboxes_3d[:, 3:])
 
         pc_rect = np.zeros_like(pc_velo)
