@@ -2,8 +2,10 @@ import torch.nn.functional as F
 import torch.nn as nn
 import torch
 import functools
+import logging
 
 from lib.functions import anchor_target_3d
+logger = logging.getLogger('global')
 
 class model(nn.Module):
     def __init__(self, cfg):
@@ -94,8 +96,8 @@ class model(nn.Module):
         outputs = {'losses': [], 'predict': [], 'accuracy': []}
         x = self.feature_extractor(voxel_with_points, num_pts, leaf_out, voxel_indices)
         rpn_pred_cls, rpn_pred_loc = self.rpn(x)
-        print("rpn_pred_cls shape:", rpn_pred_cls.size())
-        print("rpn_pred_loc shape:", rpn_pred_loc.size())
+        logger.debug("rpn_pred_cls shape: {}".format(rpn_pred_cls.size()))
+        logger.debug("rpn_pred_loc shape: {}".format(rpn_pred_loc.size()))
 
         if self.training:
             # train rpn

@@ -42,13 +42,14 @@ def compute_anchor_targets(feature_size, cfg, ground_truth_bboxes, image_info, i
     anchor_stride = np.asarray(cfg['anchor_stride'])
     bev_extents = area_extents[[0, 2]]
     anchors_overplane = anchor_helper.get_anchors_over_plane(featmap_h, featmap_w, area_extents, anchor_3d_sizes, anchor_stride, ground_plane)
-    print('anchors shape:', anchors_overplane.shape)
+
     B = batch_size
     A = num_anchors
     K = featmap_h * featmap_w
     G = ground_truth_bboxes.shape[1]
-    print(B, A, K, G )
-    print('ground_truth_bboxes size: ', ground_truth_bboxes.shape)
+    logger.debug('anchors shape:{}'.format(anchors_overplane.shape))
+    logger.debug('batchsize: %d, num_anchors: %d, K: %d, anchor shape[-1]: %d'%(B, A, K, G))
+    logger.debug('ground_truth_bboxes size: {}'.format(ground_truth_bboxes.shape))
     #logger.info("the number of gts is {}".format(G))
     labels = np.zeros([B, K*A], dtype=np.int64)
     if G != 0:
@@ -65,11 +66,12 @@ def compute_anchor_targets(feature_size, cfg, ground_truth_bboxes, image_info, i
 
             # compute overlaps between anchors and gt_bboxes within each batch
             # shape: [B, K*A, G]
-            print('gt_boxes_for_2d_iou size:', gt_boxes_for_2d_iou.shape)
+            logger.debug('gt_boxes_for_2d_iou size: {}'.format(gt_boxes_for_2d_iou.shape))
             gt_boxes_for_2d_iou = gt_boxes_for_2d_iou.reshape(B, G, -1)
             overlaps = np.stack([bbox_helper.bbox_iou_overlaps(anchors_for_2d_iou,
                                                                gt_boxes_for_2d_iou[ix]) for ix in range(B)], axis=0)
-            print('overlaps shape:', overlaps.shape)
+            logger.debug('overlaps shape:{}'.format(overlaps.shape))
+
         elif rpn_iou_type == '3d':
             # Convert anchors to 3d iou format for calculation
             anchors_for_3d_iou = box_3d_encoder.box_3d_to_3d_iou_format(

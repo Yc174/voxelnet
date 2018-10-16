@@ -161,7 +161,7 @@ class KittiDataloader(DataLoader):
         voxel = torch.from_numpy(np.array(s_voxel))
 
         # print("padded img size:", padded_images.size())
-        print("padded gt_bboxes_3d size", padded_gt_bboxes_3d.size())
+        # print("padded gt_bboxes_3d size", padded_gt_bboxes_3d.size())
         # print("padded points size:", padded_points.size())
         # print("padded indices size:", padded_indices.size())
         # print("padded num_pts size:", padded_num_pts.size())

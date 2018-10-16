@@ -1,6 +1,9 @@
 import torch
 import torch.nn as nn
 from .torch_util import Conv2d
+import logging
+logger =logging.getLogger('global')
+
 class NaiveRpnHead(nn.Module):
     def __init__(self, inplanes, num_classes, num_anchors):
         '''
@@ -83,11 +86,11 @@ class RPN(nn.Module):
         deconv1 = self.deconv1(conv3)
         deconv2 = self.deconv2(conv2)
         deconv3 = self.deconv3(conv1)
-        print('x shape:', x.size())
-        print(conv1.size(), conv2.size(),conv3.size())
-        print('deconv1 shape:', deconv1.size())
-        print('deconv2 shape:', deconv2.size())
-        print('deconv3 shape:', deconv3.size())
+        logger.debug('x shape: {}'.format(x.size()))
+        logger.debug('rpn conv1 shape:{}, conv2 shape:{}, conv3 shape:{}'.format(conv1.size(), conv2.size(),conv3.size()))
+        logger.debug('deconv1 shape: {}'.format(deconv1.size()))
+        logger.debug('deconv2 shape: {}'.format(deconv2.size()))
+        logger.debug('deconv3 shape: {}'.format(deconv3.size()))
         out = torch.cat((deconv1, deconv2, deconv3), 1) ###################
         rpn_pred_cls, rpn_pred_loc = self.rpn_head(out)
         return rpn_pred_cls, rpn_pred_loc

@@ -5,6 +5,8 @@ import torch.nn.functional as F
 import torch.nn as nn
 import torch
 
+import logging
+logger = logging.getLogger('global')
 
 class FCN(nn.Module):
     def __init__(self, inplanes, planes):
@@ -29,9 +31,9 @@ class VFE(nn.Module):
         batch, channel, voxels, num_T = x.size()
         out = self.fcn1(x)
         point_wise_feature = F.max_pool2d(out, kernel_size=[1, num_T], stride=[1, num_T])
-        print('point_wise_feature size:', point_wise_feature.size())
+        logger.debug('point_wise_feature size: {}'.format(point_wise_feature.size()))
         out = torch.cat((out, point_wise_feature.repeat(1, 1, 1, num_T)), 1)
-        print('VFE size:', out.size())
+        logger.debug('VFE size: {}'.format(out.size()))
         return out
 
 class Conv_Middle_layers(nn.Module):
@@ -46,9 +48,9 @@ class Conv_Middle_layers(nn.Module):
         out = self.conv2(out)
         out = self.conv3(out)
         shape = out.size()
-        print("conv3d feature size:", shape)
+        logger.debug("conv3d feature size: {}".format(shape))
         out = out.view(shape[0], -1, shape[-2], shape[-1])
-        print("after reshape size:", out.size())
+        logger.debug("after reshape size: {}".format(out.size()))
         return out
 
 class feature_learning_network(nn.Module):
@@ -82,12 +84,12 @@ class Voxelnet(model):
     def feature_extractor(self, voxel_with_points, num_pts, leaf_out, voxel_indices):
         batch, channel, z, y, x, num_T, = voxel_with_points.size()
         reshaped_voxel_with_points = voxel_with_points.view(batch, channel, y*z*x, num_T)
-        print("voxel_with_points size: ", voxel_with_points.size())
-        print("reshaped_voxel_with_points size:", reshaped_voxel_with_points.size())
+        logger.debug("voxel_with_points size: {}".format(voxel_with_points.size()))
+        logger.debug("reshaped_voxel_with_points size: {}".format(reshaped_voxel_with_points.size()))
 
         features = self.feature_learnig(reshaped_voxel_with_points)
         features = features.view(batch, -1, z, y, x)
-        print('features learing size:', features.size())
+        logger.debug('features learing size: {}'.format(features.size()))
         out = self.conv3d(features)
 
         return out

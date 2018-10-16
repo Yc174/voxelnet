@@ -8,6 +8,8 @@ import torch
 
 from lib.dataset.kitti_dataset import KittiDataset, KittiDataloader
 from lib.models.voxelnet import Voxelnet
+from lib.functions import log_helper
+import logging
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-j', '--workers', default=2, type=int, metavar='N',
@@ -45,6 +47,7 @@ def load_config(config_path):
     return cfg
 
 def build_data_loader(dataset, cfg):
+    logger = logging.getLogger('global')
     if dataset == 'kitti':
         Dataset = KittiDataset
         Dataloader = KittiDataloader
@@ -56,13 +59,16 @@ def build_data_loader(dataset, cfg):
     train_dataset = Dataset(args.datadir, cfg)
     train_loader = Dataloader(train_dataset, batch_size=args.batch_size, shuffle=False,
                               num_workers=args.workers, pin_memory=False)
+    logger.info('build dataloader done')
     return train_loader
 
 def main():
+    log_helper.init_log('global', logging.INFO)
+    logger = logging.getLogger('global')
     cfg = load_config(args.config)
     train_loader = build_data_loader(args.dataset, cfg)
     model = Voxelnet(cfg=cfg)
-    print(model)
+    logger.info(model)
     trainable_params = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.SGD(trainable_params, args.lr,
                                 momentum=args.momentum,
@@ -81,9 +87,8 @@ def main():
 
 
 def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
-
+    logger = logging.getLogger('global')
     for iter, input in enumerate(dataloader):
-        print('iter%d'%iter, input[1].shape)
         x = {
             'cfg': cfg,
             'image': torch.autograd.Variable(input[0]).cuda(),
@@ -99,20 +104,16 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
         outputs = model(x)
         rpn_cls_loss = outputs['losses'][0]
         rpn_loc_loss = outputs['losses'][1]
-        print('rpn_cls_loss :', rpn_cls_loss)
-        print('rpn_loc_loss :', rpn_loc_loss)
-
-        rpn_cls_loss_value = rpn_cls_loss.data[0]
-        rpn_loc_loss_value = rpn_loc_loss.data[0]
+        rpn_accuracy = outputs['accuracy'][0][0] / 100.
 
         loss = rpn_cls_loss + rpn_loc_loss
-        loss_value = loss.data[0]
 
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        print('Epoch: [%d][%d/%d]'%(epoch, iter, len(dataloader)))
+        logger.info('Epoch: [%d][%d/%d] Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
+                    (epoch, iter, len(dataloader), loss.data[0], rpn_cls_loss.data[0], rpn_loc_loss.data[0], rpn_accuracy))
 
 def validate(dataloader, model, cfg):
     # switch to evaluate mode
@@ -132,4 +133,3 @@ def adjust_learning_rate(optimizer, rate, gradual = True):
 
 if __name__ == "__main__":
     main()
-    print("OK!")

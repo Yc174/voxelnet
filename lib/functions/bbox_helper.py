@@ -97,8 +97,8 @@ def compute_loc_targets_3d(raw_bboxes, gt_bboxes):
     :returns
         loc_targets:[N, 7]
     '''
-    # assert raw_bboxes.shape[-1]==7 and gt_bboxes.shape[-1]==7,
-    print(raw_bboxes.shape, gt_bboxes.shape)
+    assert raw_bboxes.shape[-1]==7 and gt_bboxes.shape[-1]==7;
+
     l_a = raw_bboxes[:, 3]
     w_a = raw_bboxes[:, 4]
     h_a = raw_bboxes[:, 5]
