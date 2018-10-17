@@ -163,3 +163,823 @@
 2018-10-16 22:26:24,579 - INFO - train.py[:116] - Epoch: [9][2/5] Loss: 0.08911 (rpn_cls: 0.06279 rpn_loc: 0.02632 rpn_acc: 0.98633)
 2018-10-16 22:26:24,928 - INFO - train.py[:116] - Epoch: [9][3/5] Loss: 0.13081 (rpn_cls: 0.08979 rpn_loc: 0.04102 rpn_acc: 0.98047)
 2018-10-16 22:26:25,141 - INFO - train.py[:116] - Epoch: [9][4/5] Loss: 0.20121 (rpn_cls: 0.13362 rpn_loc: 0.06759 rpn_acc: 0.96484)
+2018-10-16 22:36:38,773 - INFO - train.py[:64] - build dataloader done
+2018-10-16 22:36:38,860 - INFO - train.py[:73] - Voxelnet(
+  (feature_learnig): feature_learning_network(
+    (vfe1): VFE(
+      (fcn1): FCN(
+        (conv1): Conv2d(4, 16, kernel_size=(1, 1), stride=(1, 1))
+        (bn1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace)
+      )
+    )
+    (fcn1): FCN(
+      (conv1): Conv2d(32, 128, kernel_size=(1, 1), stride=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+  )
+  (conv3d): Conv_Middle_layers(
+    (conv1): Conv3d(
+      (conv1): Conv3d(128, 64, kernel_size=(3, 3, 3), stride=(2, 1, 1), padding=(1, 1, 1))
+      (bn1): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2): Conv3d(
+      (conv1): Conv3d(64, 64, kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1))
+      (bn1): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3): Conv3d(
+      (conv1): Conv3d(64, 64, kernel_size=(3, 3, 3), stride=(2, 1, 1), padding=(1, 1, 1))
+      (bn1): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+  )
+  (_rpn): RPN(
+    (conv1_1): Conv2d(
+      (conv1): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv1_2): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv1_3): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv1_4): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_1): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_2): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_3): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_4): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_5): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_1): Conv2d(
+      (conv1): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_2): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_3): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_4): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_5): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (deconv1): ConvTranspose2d(256, 256, kernel_size=(4, 4), stride=(4, 4), padding=(0, 1), output_padding=(0, 1))
+    (deconv2): ConvTranspose2d(128, 256, kernel_size=(2, 2), stride=(2, 2), padding=(0, 1), output_padding=(0, 1))
+    (deconv3): ConvTranspose2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (rpn_head): NaiveRpnHead(
+      (conv3x3): Conv2d(768, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (relu3x3): ReLU(inplace)
+      (conv_cls): Conv2d(512, 4, kernel_size=(1, 1), stride=(1, 1))
+      (conv_loc): Conv2d(512, 14, kernel_size=(1, 1), stride=(1, 1))
+    )
+  )
+)
+2018-10-16 22:36:41,755 - INFO - train.py[:120] - Epoch: [0][0/5] Time: 0.298620 Loss: 0.70341 (rpn_cls: 0.68992 rpn_loc: 0.01349 rpn_acc: 0.50781)
+2018-10-16 22:36:41,755 - INFO - log_helper.py[:37] - Progress: -4 / 50 [-8%], Speed: 0.299 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:42,100 - INFO - train.py[:120] - Epoch: [0][1/5] Time: 0.644283 Loss: 0.61418 (rpn_cls: 0.60089 rpn_loc: 0.01329 rpn_acc: 0.99414)
+2018-10-16 22:36:42,100 - INFO - log_helper.py[:37] - Progress: -3 / 50 [-6%], Speed: 0.644 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:42,446 - INFO - train.py[:120] - Epoch: [0][2/5] Time: 0.988836 Loss: 0.47988 (rpn_cls: 0.44418 rpn_loc: 0.03570 rpn_acc: 0.98633)
+2018-10-16 22:36:42,447 - INFO - log_helper.py[:37] - Progress: -2 / 50 [-4%], Speed: 0.989 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:42,787 - INFO - train.py[:120] - Epoch: [0][3/5] Time: 1.330217 Loss: 0.31387 (rpn_cls: 0.25335 rpn_loc: 0.06052 rpn_acc: 0.98047)
+2018-10-16 22:36:42,787 - INFO - log_helper.py[:37] - Progress: -1 / 50 [-2%], Speed: 1.330 s/iter, ETA 0:00:01 (D:H:M)
+
+2018-10-16 22:36:42,997 - INFO - train.py[:120] - Epoch: [0][4/5] Time: 1.635660 Loss: 0.27310 (rpn_cls: 0.17406 rpn_loc: 0.09904 rpn_acc: 0.96484)
+2018-10-16 22:36:42,998 - INFO - log_helper.py[:37] - Progress: 0 / 50 [0%], Speed: 1.636 s/iter, ETA 0:00:01 (D:H:M)
+
+2018-10-16 22:36:43,559 - INFO - train.py[:120] - Epoch: [1][0/5] Time: 0.313540 Loss: 0.03849 (rpn_cls: 0.02627 rpn_loc: 0.01222 rpn_acc: 0.99609)
+2018-10-16 22:36:43,559 - INFO - log_helper.py[:37] - Progress: 1 / 50 [2%], Speed: 0.314 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:43,903 - INFO - train.py[:120] - Epoch: [1][1/5] Time: 0.653147 Loss: 0.08623 (rpn_cls: 0.07285 rpn_loc: 0.01338 rpn_acc: 0.99414)
+2018-10-16 22:36:43,903 - INFO - log_helper.py[:37] - Progress: 2 / 50 [4%], Speed: 0.653 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:44,247 - INFO - train.py[:120] - Epoch: [1][2/5] Time: 0.996992 Loss: 0.19219 (rpn_cls: 0.15732 rpn_loc: 0.03487 rpn_acc: 0.98633)
+2018-10-16 22:36:44,247 - INFO - log_helper.py[:37] - Progress: 3 / 50 [6%], Speed: 0.997 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:44,590 - INFO - train.py[:120] - Epoch: [1][3/5] Time: 1.340648 Loss: 0.29975 (rpn_cls: 0.24546 rpn_loc: 0.05429 rpn_acc: 0.98047)
+2018-10-16 22:36:44,590 - INFO - log_helper.py[:37] - Progress: 4 / 50 [8%], Speed: 1.341 s/iter, ETA 0:00:01 (D:H:M)
+
+2018-10-16 22:36:44,801 - INFO - train.py[:120] - Epoch: [1][4/5] Time: 1.645206 Loss: 0.42772 (rpn_cls: 0.35066 rpn_loc: 0.07706 rpn_acc: 0.96484)
+2018-10-16 22:36:44,801 - INFO - log_helper.py[:37] - Progress: 5 / 50 [10%], Speed: 1.645 s/iter, ETA 0:00:01 (D:H:M)
+
+2018-10-16 22:36:45,361 - INFO - train.py[:120] - Epoch: [2][0/5] Time: 0.314580 Loss: 0.04333 (rpn_cls: 0.03236 rpn_loc: 0.01097 rpn_acc: 0.99609)
+2018-10-16 22:36:45,361 - INFO - log_helper.py[:37] - Progress: 6 / 50 [12%], Speed: 0.315 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:45,701 - INFO - train.py[:120] - Epoch: [2][1/5] Time: 0.648138 Loss: 0.07860 (rpn_cls: 0.06419 rpn_loc: 0.01441 rpn_acc: 0.99414)
+2018-10-16 22:36:45,702 - INFO - log_helper.py[:37] - Progress: 7 / 50 [14%], Speed: 0.648 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:46,046 - INFO - train.py[:120] - Epoch: [2][2/5] Time: 0.991834 Loss: 0.13932 (rpn_cls: 0.09588 rpn_loc: 0.04344 rpn_acc: 0.98633)
+2018-10-16 22:36:46,046 - INFO - log_helper.py[:37] - Progress: 8 / 50 [16%], Speed: 0.992 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:46,390 - INFO - train.py[:120] - Epoch: [2][3/5] Time: 1.335539 Loss: 0.17905 (rpn_cls: 0.12320 rpn_loc: 0.05585 rpn_acc: 0.98047)
+2018-10-16 22:36:46,390 - INFO - log_helper.py[:37] - Progress: 9 / 50 [18%], Speed: 1.336 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:46,600 - INFO - train.py[:120] - Epoch: [2][4/5] Time: 1.640650 Loss: 0.25411 (rpn_cls: 0.16522 rpn_loc: 0.08889 rpn_acc: 0.96484)
+2018-10-16 22:36:46,601 - INFO - log_helper.py[:37] - Progress: 10 / 50 [20%], Speed: 1.641 s/iter, ETA 0:00:01 (D:H:M)
+
+2018-10-16 22:36:47,152 - INFO - train.py[:120] - Epoch: [3][0/5] Time: 0.303194 Loss: 0.09083 (rpn_cls: 0.07933 rpn_loc: 0.01150 rpn_acc: 0.99609)
+2018-10-16 22:36:47,153 - INFO - log_helper.py[:37] - Progress: 11 / 50 [22%], Speed: 0.303 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:47,495 - INFO - train.py[:120] - Epoch: [3][1/5] Time: 0.640830 Loss: 0.10324 (rpn_cls: 0.09308 rpn_loc: 0.01016 rpn_acc: 0.99414)
+2018-10-16 22:36:47,496 - INFO - log_helper.py[:37] - Progress: 12 / 50 [24%], Speed: 0.641 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:47,839 - INFO - train.py[:120] - Epoch: [3][2/5] Time: 0.983588 Loss: 0.13203 (rpn_cls: 0.10286 rpn_loc: 0.02916 rpn_acc: 0.98633)
+2018-10-16 22:36:47,839 - INFO - log_helper.py[:37] - Progress: 13 / 50 [26%], Speed: 0.984 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:48,182 - INFO - train.py[:120] - Epoch: [3][3/5] Time: 1.327375 Loss: 0.16402 (rpn_cls: 0.11571 rpn_loc: 0.04831 rpn_acc: 0.98047)
+2018-10-16 22:36:48,183 - INFO - log_helper.py[:37] - Progress: 14 / 50 [28%], Speed: 1.327 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:48,393 - INFO - train.py[:120] - Epoch: [3][4/5] Time: 1.632502 Loss: 0.21357 (rpn_cls: 0.13571 rpn_loc: 0.07786 rpn_acc: 0.96484)
+2018-10-16 22:36:48,394 - INFO - log_helper.py[:37] - Progress: 15 / 50 [30%], Speed: 1.633 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:48,910 - INFO - train.py[:120] - Epoch: [4][0/5] Time: 0.268238 Loss: 0.04970 (rpn_cls: 0.03910 rpn_loc: 0.01060 rpn_acc: 0.99609)
+2018-10-16 22:36:48,910 - INFO - log_helper.py[:37] - Progress: 16 / 50 [32%], Speed: 0.268 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:49,254 - INFO - train.py[:120] - Epoch: [4][1/5] Time: 0.607353 Loss: 0.05373 (rpn_cls: 0.04375 rpn_loc: 0.00999 rpn_acc: 0.99414)
+2018-10-16 22:36:49,254 - INFO - log_helper.py[:37] - Progress: 17 / 50 [34%], Speed: 0.607 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:49,598 - INFO - train.py[:120] - Epoch: [4][2/5] Time: 0.951664 Loss: 0.10437 (rpn_cls: 0.06977 rpn_loc: 0.03460 rpn_acc: 0.98633)
+2018-10-16 22:36:49,598 - INFO - log_helper.py[:37] - Progress: 18 / 50 [36%], Speed: 0.952 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:49,943 - INFO - train.py[:120] - Epoch: [4][3/5] Time: 1.296704 Loss: 0.14314 (rpn_cls: 0.09581 rpn_loc: 0.04734 rpn_acc: 0.98047)
+2018-10-16 22:36:49,944 - INFO - log_helper.py[:37] - Progress: 19 / 50 [38%], Speed: 1.297 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:50,154 - INFO - train.py[:120] - Epoch: [4][4/5] Time: 1.602706 Loss: 0.21523 (rpn_cls: 0.14340 rpn_loc: 0.07183 rpn_acc: 0.96484)
+2018-10-16 22:36:50,155 - INFO - log_helper.py[:37] - Progress: 20 / 50 [40%], Speed: 1.603 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:50,711 - INFO - train.py[:120] - Epoch: [5][0/5] Time: 0.307664 Loss: 0.04465 (rpn_cls: 0.03455 rpn_loc: 0.01010 rpn_acc: 0.99609)
+2018-10-16 22:36:50,712 - INFO - log_helper.py[:37] - Progress: 21 / 50 [42%], Speed: 0.308 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:51,057 - INFO - train.py[:120] - Epoch: [5][1/5] Time: 0.649608 Loss: 0.05024 (rpn_cls: 0.04101 rpn_loc: 0.00923 rpn_acc: 0.99414)
+2018-10-16 22:36:51,058 - INFO - log_helper.py[:37] - Progress: 22 / 50 [44%], Speed: 0.650 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:51,403 - INFO - train.py[:120] - Epoch: [5][2/5] Time: 0.995296 Loss: 0.09963 (rpn_cls: 0.06846 rpn_loc: 0.03117 rpn_acc: 0.98633)
+2018-10-16 22:36:51,403 - INFO - log_helper.py[:37] - Progress: 23 / 50 [46%], Speed: 0.995 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:51,747 - INFO - train.py[:120] - Epoch: [5][3/5] Time: 1.339481 Loss: 0.13828 (rpn_cls: 0.09436 rpn_loc: 0.04392 rpn_acc: 0.98047)
+2018-10-16 22:36:51,747 - INFO - log_helper.py[:37] - Progress: 24 / 50 [48%], Speed: 1.339 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:51,959 - INFO - train.py[:120] - Epoch: [5][4/5] Time: 1.645000 Loss: 0.20020 (rpn_cls: 0.13267 rpn_loc: 0.06753 rpn_acc: 0.96484)
+2018-10-16 22:36:51,959 - INFO - log_helper.py[:37] - Progress: 25 / 50 [50%], Speed: 1.645 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:52,516 - INFO - train.py[:120] - Epoch: [6][0/5] Time: 0.310706 Loss: 0.04496 (rpn_cls: 0.03494 rpn_loc: 0.01002 rpn_acc: 0.99609)
+2018-10-16 22:36:52,516 - INFO - log_helper.py[:37] - Progress: 26 / 50 [52%], Speed: 0.311 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:52,861 - INFO - train.py[:120] - Epoch: [6][1/5] Time: 0.649336 Loss: 0.04708 (rpn_cls: 0.03852 rpn_loc: 0.00856 rpn_acc: 0.99414)
+2018-10-16 22:36:52,861 - INFO - log_helper.py[:37] - Progress: 27 / 50 [54%], Speed: 0.649 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:53,205 - INFO - train.py[:120] - Epoch: [6][2/5] Time: 0.994102 Loss: 0.09700 (rpn_cls: 0.06829 rpn_loc: 0.02871 rpn_acc: 0.98633)
+2018-10-16 22:36:53,205 - INFO - log_helper.py[:37] - Progress: 28 / 50 [56%], Speed: 0.994 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:53,550 - INFO - train.py[:120] - Epoch: [6][3/5] Time: 1.338946 Loss: 0.13737 (rpn_cls: 0.09443 rpn_loc: 0.04294 rpn_acc: 0.98047)
+2018-10-16 22:36:53,551 - INFO - log_helper.py[:37] - Progress: 29 / 50 [57%], Speed: 1.339 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:53,762 - INFO - train.py[:120] - Epoch: [6][4/5] Time: 1.644535 Loss: 0.19459 (rpn_cls: 0.12876 rpn_loc: 0.06583 rpn_acc: 0.96484)
+2018-10-16 22:36:53,762 - INFO - log_helper.py[:37] - Progress: 30 / 50 [60%], Speed: 1.645 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:54,317 - INFO - train.py[:120] - Epoch: [7][0/5] Time: 0.306563 Loss: 0.04419 (rpn_cls: 0.03421 rpn_loc: 0.00997 rpn_acc: 0.99609)
+2018-10-16 22:36:54,317 - INFO - log_helper.py[:37] - Progress: 31 / 50 [62%], Speed: 0.307 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:54,662 - INFO - train.py[:120] - Epoch: [7][1/5] Time: 0.646573 Loss: 0.04796 (rpn_cls: 0.03956 rpn_loc: 0.00840 rpn_acc: 0.99414)
+2018-10-16 22:36:54,662 - INFO - log_helper.py[:37] - Progress: 32 / 50 [64%], Speed: 0.647 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:55,007 - INFO - train.py[:120] - Epoch: [7][2/5] Time: 0.992021 Loss: 0.09512 (rpn_cls: 0.06664 rpn_loc: 0.02848 rpn_acc: 0.98633)
+2018-10-16 22:36:55,007 - INFO - log_helper.py[:37] - Progress: 33 / 50 [66%], Speed: 0.992 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:55,351 - INFO - train.py[:120] - Epoch: [7][3/5] Time: 1.337554 Loss: 0.13523 (rpn_cls: 0.09278 rpn_loc: 0.04245 rpn_acc: 0.98047)
+2018-10-16 22:36:55,352 - INFO - log_helper.py[:37] - Progress: 34 / 50 [68%], Speed: 1.338 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:55,565 - INFO - train.py[:120] - Epoch: [7][4/5] Time: 1.645310 Loss: 0.19401 (rpn_cls: 0.12809 rpn_loc: 0.06592 rpn_acc: 0.96484)
+2018-10-16 22:36:55,565 - INFO - log_helper.py[:37] - Progress: 35 / 50 [70%], Speed: 1.645 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:56,178 - INFO - train.py[:120] - Epoch: [8][0/5] Time: 0.368385 Loss: 0.04437 (rpn_cls: 0.03445 rpn_loc: 0.00992 rpn_acc: 0.99609)
+2018-10-16 22:36:56,178 - INFO - log_helper.py[:37] - Progress: 36 / 50 [72%], Speed: 0.368 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:56,524 - INFO - train.py[:120] - Epoch: [8][1/5] Time: 0.707049 Loss: 0.04808 (rpn_cls: 0.03987 rpn_loc: 0.00821 rpn_acc: 0.99414)
+2018-10-16 22:36:56,524 - INFO - log_helper.py[:37] - Progress: 37 / 50 [74%], Speed: 0.707 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:56,869 - INFO - train.py[:120] - Epoch: [8][2/5] Time: 1.051960 Loss: 0.09580 (rpn_cls: 0.06755 rpn_loc: 0.02826 rpn_acc: 0.98633)
+2018-10-16 22:36:56,869 - INFO - log_helper.py[:37] - Progress: 38 / 50 [76%], Speed: 1.052 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:57,213 - INFO - train.py[:120] - Epoch: [8][3/5] Time: 1.396182 Loss: 0.13615 (rpn_cls: 0.09370 rpn_loc: 0.04245 rpn_acc: 0.98047)
+2018-10-16 22:36:57,214 - INFO - log_helper.py[:37] - Progress: 39 / 50 [78%], Speed: 1.396 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:57,426 - INFO - train.py[:120] - Epoch: [8][4/5] Time: 1.704606 Loss: 0.19388 (rpn_cls: 0.12850 rpn_loc: 0.06538 rpn_acc: 0.96484)
+2018-10-16 22:36:57,427 - INFO - log_helper.py[:37] - Progress: 40 / 50 [80%], Speed: 1.705 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:57,945 - INFO - train.py[:120] - Epoch: [9][0/5] Time: 0.275012 Loss: 0.04436 (rpn_cls: 0.03451 rpn_loc: 0.00985 rpn_acc: 0.99609)
+2018-10-16 22:36:57,945 - INFO - log_helper.py[:37] - Progress: 41 / 50 [82%], Speed: 0.275 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:58,290 - INFO - train.py[:120] - Epoch: [9][1/5] Time: 0.610744 Loss: 0.04744 (rpn_cls: 0.03941 rpn_loc: 0.00803 rpn_acc: 0.99414)
+2018-10-16 22:36:58,291 - INFO - log_helper.py[:37] - Progress: 42 / 50 [84%], Speed: 0.611 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:58,636 - INFO - train.py[:120] - Epoch: [9][2/5] Time: 0.956482 Loss: 0.09590 (rpn_cls: 0.06785 rpn_loc: 0.02806 rpn_acc: 0.98633)
+2018-10-16 22:36:58,636 - INFO - log_helper.py[:37] - Progress: 43 / 50 [86%], Speed: 0.956 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:58,982 - INFO - train.py[:120] - Epoch: [9][3/5] Time: 1.303365 Loss: 0.13748 (rpn_cls: 0.09548 rpn_loc: 0.04200 rpn_acc: 0.98047)
+2018-10-16 22:36:58,983 - INFO - log_helper.py[:37] - Progress: 44 / 50 [88%], Speed: 1.303 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:36:59,194 - INFO - train.py[:120] - Epoch: [9][4/5] Time: 1.609276 Loss: 0.19172 (rpn_cls: 0.12758 rpn_loc: 0.06414 rpn_acc: 0.96484)
+2018-10-16 22:36:59,194 - INFO - log_helper.py[:37] - Progress: 45 / 50 [90%], Speed: 1.609 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:43:24,049 - INFO - train.py[:64] - build dataloader done
+2018-10-16 22:43:24,136 - INFO - train.py[:73] - Voxelnet(
+  (feature_learnig): feature_learning_network(
+    (vfe1): VFE(
+      (fcn1): FCN(
+        (conv1): Conv2d(4, 16, kernel_size=(1, 1), stride=(1, 1))
+        (bn1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace)
+      )
+    )
+    (fcn1): FCN(
+      (conv1): Conv2d(32, 128, kernel_size=(1, 1), stride=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+  )
+  (conv3d): Conv_Middle_layers(
+    (conv1): Conv3d(
+      (conv1): Conv3d(128, 64, kernel_size=(3, 3, 3), stride=(2, 1, 1), padding=(1, 1, 1))
+      (bn1): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2): Conv3d(
+      (conv1): Conv3d(64, 64, kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1))
+      (bn1): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3): Conv3d(
+      (conv1): Conv3d(64, 64, kernel_size=(3, 3, 3), stride=(2, 1, 1), padding=(1, 1, 1))
+      (bn1): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+  )
+  (_rpn): RPN(
+    (conv1_1): Conv2d(
+      (conv1): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv1_2): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv1_3): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv1_4): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_1): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_2): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_3): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_4): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_5): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_1): Conv2d(
+      (conv1): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_2): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_3): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_4): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_5): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (deconv1): ConvTranspose2d(256, 256, kernel_size=(4, 4), stride=(4, 4), padding=(0, 1), output_padding=(0, 1))
+    (deconv2): ConvTranspose2d(128, 256, kernel_size=(2, 2), stride=(2, 2), padding=(0, 1), output_padding=(0, 1))
+    (deconv3): ConvTranspose2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (rpn_head): NaiveRpnHead(
+      (conv3x3): Conv2d(768, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (relu3x3): ReLU(inplace)
+      (conv_cls): Conv2d(512, 4, kernel_size=(1, 1), stride=(1, 1))
+      (conv_loc): Conv2d(512, 14, kernel_size=(1, 1), stride=(1, 1))
+    )
+  )
+)
+2018-10-16 22:53:13,875 - INFO - train.py[:64] - build dataloader done
+2018-10-16 22:53:13,956 - INFO - train.py[:73] - Voxelnet(
+  (feature_learnig): feature_learning_network(
+    (vfe1): VFE(
+      (fcn1): FCN(
+        (conv1): Conv2d(4, 16, kernel_size=(1, 1), stride=(1, 1))
+        (bn1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace)
+      )
+    )
+    (fcn1): FCN(
+      (conv1): Conv2d(32, 128, kernel_size=(1, 1), stride=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+  )
+  (conv3d): Conv_Middle_layers(
+    (conv1): Conv3d(
+      (conv1): Conv3d(128, 64, kernel_size=(3, 3, 3), stride=(2, 1, 1), padding=(1, 1, 1))
+      (bn1): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2): Conv3d(
+      (conv1): Conv3d(64, 64, kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1))
+      (bn1): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3): Conv3d(
+      (conv1): Conv3d(64, 64, kernel_size=(3, 3, 3), stride=(2, 1, 1), padding=(1, 1, 1))
+      (bn1): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+  )
+  (_rpn): RPN(
+    (conv1_1): Conv2d(
+      (conv1): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv1_2): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv1_3): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv1_4): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_1): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_2): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_3): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_4): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_5): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_1): Conv2d(
+      (conv1): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_2): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_3): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_4): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_5): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (deconv1): ConvTranspose2d(256, 256, kernel_size=(4, 4), stride=(4, 4), padding=(0, 1), output_padding=(0, 1))
+    (deconv2): ConvTranspose2d(128, 256, kernel_size=(2, 2), stride=(2, 2), padding=(0, 1), output_padding=(0, 1))
+    (deconv3): ConvTranspose2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (rpn_head): NaiveRpnHead(
+      (conv3x3): Conv2d(768, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (relu3x3): ReLU(inplace)
+      (conv_cls): Conv2d(512, 4, kernel_size=(1, 1), stride=(1, 1))
+      (conv_loc): Conv2d(512, 14, kernel_size=(1, 1), stride=(1, 1))
+    )
+  )
+)
+2018-10-16 22:53:16,795 - INFO - train.py[:122] - Epoch: [0][0/5] LR:0.100000 Time: 0.327008 Loss: 0.69808 (rpn_cls: 0.68450 rpn_loc: 0.01358 rpn_acc: 0.75781)
+2018-10-16 22:53:16,795 - INFO - log_helper.py[:37] - Progress: -4 / 50 [-8%], Speed: 0.327 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:17,139 - INFO - train.py[:122] - Epoch: [0][1/5] LR:0.100000 Time: 0.657856 Loss: 0.61232 (rpn_cls: 0.59946 rpn_loc: 0.01286 rpn_acc: 0.99414)
+2018-10-16 22:53:17,140 - INFO - log_helper.py[:37] - Progress: -3 / 50 [-6%], Speed: 0.658 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:17,484 - INFO - train.py[:122] - Epoch: [0][2/5] LR:0.100000 Time: 1.002481 Loss: 0.47335 (rpn_cls: 0.43673 rpn_loc: 0.03661 rpn_acc: 0.98633)
+2018-10-16 22:53:17,485 - INFO - log_helper.py[:37] - Progress: -2 / 50 [-4%], Speed: 1.002 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:17,830 - INFO - train.py[:122] - Epoch: [0][3/5] LR:0.100000 Time: 1.348150 Loss: 0.30154 (rpn_cls: 0.24163 rpn_loc: 0.05991 rpn_acc: 0.98047)
+2018-10-16 22:53:17,831 - INFO - log_helper.py[:37] - Progress: -1 / 50 [-2%], Speed: 1.348 s/iter, ETA 0:00:01 (D:H:M)
+
+2018-10-16 22:53:18,042 - INFO - train.py[:122] - Epoch: [0][4/5] LR:0.100000 Time: 1.656125 Loss: 0.26227 (rpn_cls: 0.16851 rpn_loc: 0.09376 rpn_acc: 0.96484)
+2018-10-16 22:53:18,043 - INFO - log_helper.py[:37] - Progress: 0 / 50 [0%], Speed: 1.656 s/iter, ETA 0:00:01 (D:H:M)
+
+2018-10-16 22:53:18,597 - INFO - train.py[:122] - Epoch: [1][0/5] LR:0.100000 Time: 0.308852 Loss: 0.03842 (rpn_cls: 0.02631 rpn_loc: 0.01211 rpn_acc: 0.99609)
+2018-10-16 22:53:18,597 - INFO - log_helper.py[:37] - Progress: 1 / 50 [2%], Speed: 0.309 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:18,944 - INFO - train.py[:122] - Epoch: [1][1/5] LR:0.100000 Time: 0.648498 Loss: 0.06830 (rpn_cls: 0.05715 rpn_loc: 0.01115 rpn_acc: 0.99414)
+2018-10-16 22:53:18,944 - INFO - log_helper.py[:37] - Progress: 2 / 50 [4%], Speed: 0.648 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:19,289 - INFO - train.py[:122] - Epoch: [1][2/5] LR:0.100000 Time: 0.993315 Loss: 0.20886 (rpn_cls: 0.15824 rpn_loc: 0.05062 rpn_acc: 0.98633)
+2018-10-16 22:53:19,289 - INFO - log_helper.py[:37] - Progress: 3 / 50 [6%], Speed: 0.993 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:19,634 - INFO - train.py[:122] - Epoch: [1][3/5] LR:0.100000 Time: 1.338456 Loss: 0.32016 (rpn_cls: 0.25169 rpn_loc: 0.06847 rpn_acc: 0.98047)
+2018-10-16 22:53:19,634 - INFO - log_helper.py[:37] - Progress: 4 / 50 [8%], Speed: 1.338 s/iter, ETA 0:00:01 (D:H:M)
+
+2018-10-16 22:53:19,844 - INFO - train.py[:122] - Epoch: [1][4/5] LR:0.100000 Time: 1.643796 Loss: 0.45218 (rpn_cls: 0.36101 rpn_loc: 0.09118 rpn_acc: 0.96484)
+2018-10-16 22:53:19,844 - INFO - log_helper.py[:37] - Progress: 5 / 50 [10%], Speed: 1.644 s/iter, ETA 0:00:01 (D:H:M)
+
+2018-10-16 22:53:20,390 - INFO - train.py[:122] - Epoch: [2][0/5] LR:0.100000 Time: 0.297791 Loss: 0.04496 (rpn_cls: 0.03244 rpn_loc: 0.01252 rpn_acc: 0.99609)
+2018-10-16 22:53:20,391 - INFO - log_helper.py[:37] - Progress: 6 / 50 [12%], Speed: 0.298 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:20,733 - INFO - train.py[:122] - Epoch: [2][1/5] LR:0.100000 Time: 0.635776 Loss: 0.06731 (rpn_cls: 0.04831 rpn_loc: 0.01900 rpn_acc: 0.99414)
+2018-10-16 22:53:20,734 - INFO - log_helper.py[:37] - Progress: 7 / 50 [14%], Speed: 0.636 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:21,080 - INFO - train.py[:122] - Epoch: [2][2/5] LR:0.100000 Time: 0.985767 Loss: 0.14926 (rpn_cls: 0.09296 rpn_loc: 0.05631 rpn_acc: 0.98633)
+2018-10-16 22:53:21,081 - INFO - log_helper.py[:37] - Progress: 8 / 50 [16%], Speed: 0.986 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:21,423 - INFO - train.py[:122] - Epoch: [2][3/5] LR:0.100000 Time: 1.325731 Loss: 0.20725 (rpn_cls: 0.13244 rpn_loc: 0.07482 rpn_acc: 0.98047)
+2018-10-16 22:53:21,423 - INFO - log_helper.py[:37] - Progress: 9 / 50 [18%], Speed: 1.326 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:21,633 - INFO - train.py[:122] - Epoch: [2][4/5] LR:0.100000 Time: 1.631792 Loss: 0.25659 (rpn_cls: 0.14903 rpn_loc: 0.10756 rpn_acc: 0.96484)
+2018-10-16 22:53:21,634 - INFO - log_helper.py[:37] - Progress: 10 / 50 [20%], Speed: 1.632 s/iter, ETA 0:00:01 (D:H:M)
+
+2018-10-16 22:53:22,194 - INFO - train.py[:122] - Epoch: [3][0/5] LR:0.100000 Time: 0.312550 Loss: 0.09251 (rpn_cls: 0.07929 rpn_loc: 0.01322 rpn_acc: 0.99609)
+2018-10-16 22:53:22,194 - INFO - log_helper.py[:37] - Progress: 11 / 50 [22%], Speed: 0.313 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:22,539 - INFO - train.py[:122] - Epoch: [3][1/5] LR:0.100000 Time: 0.652030 Loss: 0.11281 (rpn_cls: 0.09973 rpn_loc: 0.01308 rpn_acc: 0.99414)
+2018-10-16 22:53:22,539 - INFO - log_helper.py[:37] - Progress: 12 / 50 [24%], Speed: 0.652 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:22,883 - INFO - train.py[:122] - Epoch: [3][2/5] LR:0.100000 Time: 0.996997 Loss: 0.13347 (rpn_cls: 0.10258 rpn_loc: 0.03089 rpn_acc: 0.98633)
+2018-10-16 22:53:22,884 - INFO - log_helper.py[:37] - Progress: 13 / 50 [26%], Speed: 0.997 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:23,228 - INFO - train.py[:122] - Epoch: [3][3/5] LR:0.100000 Time: 1.341042 Loss: 0.15880 (rpn_cls: 0.11106 rpn_loc: 0.04774 rpn_acc: 0.98047)
+2018-10-16 22:53:23,228 - INFO - log_helper.py[:37] - Progress: 14 / 50 [28%], Speed: 1.341 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:23,439 - INFO - train.py[:122] - Epoch: [3][4/5] LR:0.100000 Time: 1.649674 Loss: 0.21052 (rpn_cls: 0.12801 rpn_loc: 0.08251 rpn_acc: 0.96484)
+2018-10-16 22:53:23,439 - INFO - log_helper.py[:37] - Progress: 15 / 50 [30%], Speed: 1.650 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:23,982 - INFO - train.py[:122] - Epoch: [4][0/5] LR:0.010000 Time: 0.298578 Loss: 0.05426 (rpn_cls: 0.04414 rpn_loc: 0.01012 rpn_acc: 0.99609)
+2018-10-16 22:53:23,983 - INFO - log_helper.py[:37] - Progress: 16 / 50 [32%], Speed: 0.299 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:24,327 - INFO - train.py[:122] - Epoch: [4][1/5] LR:0.010000 Time: 0.636127 Loss: 0.06098 (rpn_cls: 0.04890 rpn_loc: 0.01209 rpn_acc: 0.99414)
+2018-10-16 22:53:24,328 - INFO - log_helper.py[:37] - Progress: 17 / 50 [34%], Speed: 0.636 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:24,674 - INFO - train.py[:122] - Epoch: [4][2/5] LR:0.010000 Time: 0.981971 Loss: 0.09605 (rpn_cls: 0.06526 rpn_loc: 0.03079 rpn_acc: 0.98633)
+2018-10-16 22:53:24,675 - INFO - log_helper.py[:37] - Progress: 18 / 50 [36%], Speed: 0.982 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:25,020 - INFO - train.py[:122] - Epoch: [4][3/5] LR:0.010000 Time: 1.327612 Loss: 0.13900 (rpn_cls: 0.09340 rpn_loc: 0.04560 rpn_acc: 0.98047)
+2018-10-16 22:53:25,020 - INFO - log_helper.py[:37] - Progress: 19 / 50 [38%], Speed: 1.328 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:25,232 - INFO - train.py[:122] - Epoch: [4][4/5] LR:0.010000 Time: 1.634383 Loss: 0.20220 (rpn_cls: 0.12636 rpn_loc: 0.07584 rpn_acc: 0.96484)
+2018-10-16 22:53:25,232 - INFO - log_helper.py[:37] - Progress: 20 / 50 [40%], Speed: 1.634 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:25,755 - INFO - train.py[:122] - Epoch: [5][0/5] LR:0.010000 Time: 0.272631 Loss: 0.04722 (rpn_cls: 0.03731 rpn_loc: 0.00991 rpn_acc: 0.99609)
+2018-10-16 22:53:25,756 - INFO - log_helper.py[:37] - Progress: 21 / 50 [42%], Speed: 0.273 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:26,099 - INFO - train.py[:122] - Epoch: [5][1/5] LR:0.010000 Time: 0.612848 Loss: 0.05387 (rpn_cls: 0.04240 rpn_loc: 0.01147 rpn_acc: 0.99414)
+2018-10-16 22:53:26,100 - INFO - log_helper.py[:37] - Progress: 22 / 50 [44%], Speed: 0.613 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:26,445 - INFO - train.py[:122] - Epoch: [5][2/5] LR:0.010000 Time: 0.959049 Loss: 0.09390 (rpn_cls: 0.06339 rpn_loc: 0.03052 rpn_acc: 0.98633)
+2018-10-16 22:53:26,446 - INFO - log_helper.py[:37] - Progress: 23 / 50 [46%], Speed: 0.959 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:26,792 - INFO - train.py[:122] - Epoch: [5][3/5] LR:0.010000 Time: 1.305094 Loss: 0.13891 (rpn_cls: 0.09450 rpn_loc: 0.04441 rpn_acc: 0.98047)
+2018-10-16 22:53:26,792 - INFO - log_helper.py[:37] - Progress: 24 / 50 [48%], Speed: 1.305 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:27,004 - INFO - train.py[:122] - Epoch: [5][4/5] LR:0.010000 Time: 1.612417 Loss: 0.19646 (rpn_cls: 0.12411 rpn_loc: 0.07235 rpn_acc: 0.96484)
+2018-10-16 22:53:27,004 - INFO - log_helper.py[:37] - Progress: 25 / 50 [50%], Speed: 1.612 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:27,558 - INFO - train.py[:122] - Epoch: [6][0/5] LR:0.001000 Time: 0.305337 Loss: 0.04432 (rpn_cls: 0.03491 rpn_loc: 0.00941 rpn_acc: 0.99609)
+2018-10-16 22:53:27,558 - INFO - log_helper.py[:37] - Progress: 26 / 50 [52%], Speed: 0.305 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:27,906 - INFO - train.py[:122] - Epoch: [6][1/5] LR:0.001000 Time: 0.648753 Loss: 0.05043 (rpn_cls: 0.03989 rpn_loc: 0.01054 rpn_acc: 0.99414)
+2018-10-16 22:53:27,906 - INFO - log_helper.py[:37] - Progress: 27 / 50 [54%], Speed: 0.649 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:28,253 - INFO - train.py[:122] - Epoch: [6][2/5] LR:0.001000 Time: 0.994806 Loss: 0.09114 (rpn_cls: 0.06251 rpn_loc: 0.02863 rpn_acc: 0.98633)
+2018-10-16 22:53:28,253 - INFO - log_helper.py[:37] - Progress: 28 / 50 [56%], Speed: 0.995 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:28,599 - INFO - train.py[:122] - Epoch: [6][3/5] LR:0.001000 Time: 1.341896 Loss: 0.13640 (rpn_cls: 0.09270 rpn_loc: 0.04370 rpn_acc: 0.98047)
+2018-10-16 22:53:28,600 - INFO - log_helper.py[:37] - Progress: 29 / 50 [57%], Speed: 1.342 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:28,812 - INFO - train.py[:122] - Epoch: [6][4/5] LR:0.001000 Time: 1.648599 Loss: 0.19693 (rpn_cls: 0.12525 rpn_loc: 0.07168 rpn_acc: 0.96484)
+2018-10-16 22:53:28,812 - INFO - log_helper.py[:37] - Progress: 30 / 50 [60%], Speed: 1.649 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:29,365 - INFO - train.py[:122] - Epoch: [7][0/5] LR:0.001000 Time: 0.304590 Loss: 0.04424 (rpn_cls: 0.03490 rpn_loc: 0.00933 rpn_acc: 0.99609)
+2018-10-16 22:53:29,365 - INFO - log_helper.py[:37] - Progress: 31 / 50 [62%], Speed: 0.305 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:29,711 - INFO - train.py[:122] - Epoch: [7][1/5] LR:0.001000 Time: 0.644201 Loss: 0.04894 (rpn_cls: 0.03863 rpn_loc: 0.01032 rpn_acc: 0.99414)
+2018-10-16 22:53:29,712 - INFO - log_helper.py[:37] - Progress: 32 / 50 [64%], Speed: 0.644 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:30,059 - INFO - train.py[:122] - Epoch: [7][2/5] LR:0.001000 Time: 0.992088 Loss: 0.09187 (rpn_cls: 0.06367 rpn_loc: 0.02821 rpn_acc: 0.98633)
+2018-10-16 22:53:30,060 - INFO - log_helper.py[:37] - Progress: 33 / 50 [66%], Speed: 0.992 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:30,406 - INFO - train.py[:122] - Epoch: [7][3/5] LR:0.001000 Time: 1.338946 Loss: 0.13599 (rpn_cls: 0.09281 rpn_loc: 0.04319 rpn_acc: 0.98047)
+2018-10-16 22:53:30,406 - INFO - log_helper.py[:37] - Progress: 34 / 50 [68%], Speed: 1.339 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:30,618 - INFO - train.py[:122] - Epoch: [7][4/5] LR:0.001000 Time: 1.645921 Loss: 0.19516 (rpn_cls: 0.12379 rpn_loc: 0.07137 rpn_acc: 0.96484)
+2018-10-16 22:53:30,618 - INFO - log_helper.py[:37] - Progress: 35 / 50 [70%], Speed: 1.646 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:31,191 - INFO - train.py[:122] - Epoch: [8][0/5] LR:0.001000 Time: 0.323288 Loss: 0.04337 (rpn_cls: 0.03410 rpn_loc: 0.00926 rpn_acc: 0.99609)
+2018-10-16 22:53:31,191 - INFO - log_helper.py[:37] - Progress: 36 / 50 [72%], Speed: 0.323 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:31,535 - INFO - train.py[:122] - Epoch: [8][1/5] LR:0.001000 Time: 0.662330 Loss: 0.05093 (rpn_cls: 0.04088 rpn_loc: 0.01005 rpn_acc: 0.99414)
+2018-10-16 22:53:31,536 - INFO - log_helper.py[:37] - Progress: 37 / 50 [74%], Speed: 0.662 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:31,883 - INFO - train.py[:122] - Epoch: [8][2/5] LR:0.001000 Time: 1.009955 Loss: 0.08974 (rpn_cls: 0.06172 rpn_loc: 0.02801 rpn_acc: 0.98633)
+2018-10-16 22:53:31,883 - INFO - log_helper.py[:37] - Progress: 38 / 50 [76%], Speed: 1.010 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:32,226 - INFO - train.py[:122] - Epoch: [8][3/5] LR:0.001000 Time: 1.353605 Loss: 0.13476 (rpn_cls: 0.09211 rpn_loc: 0.04265 rpn_acc: 0.98047)
+2018-10-16 22:53:32,227 - INFO - log_helper.py[:37] - Progress: 39 / 50 [78%], Speed: 1.354 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:32,438 - INFO - train.py[:122] - Epoch: [8][4/5] LR:0.001000 Time: 1.660961 Loss: 0.19531 (rpn_cls: 0.12428 rpn_loc: 0.07103 rpn_acc: 0.96484)
+2018-10-16 22:53:32,438 - INFO - log_helper.py[:37] - Progress: 40 / 50 [80%], Speed: 1.661 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:32,988 - INFO - train.py[:122] - Epoch: [9][0/5] LR:0.001000 Time: 0.300075 Loss: 0.04305 (rpn_cls: 0.03385 rpn_loc: 0.00920 rpn_acc: 0.99609)
+2018-10-16 22:53:32,989 - INFO - log_helper.py[:37] - Progress: 41 / 50 [82%], Speed: 0.300 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:33,334 - INFO - train.py[:122] - Epoch: [9][1/5] LR:0.001000 Time: 0.642035 Loss: 0.05060 (rpn_cls: 0.04060 rpn_loc: 0.00999 rpn_acc: 0.99414)
+2018-10-16 22:53:33,334 - INFO - log_helper.py[:37] - Progress: 42 / 50 [84%], Speed: 0.642 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:33,680 - INFO - train.py[:122] - Epoch: [9][2/5] LR:0.001000 Time: 0.988243 Loss: 0.08937 (rpn_cls: 0.06175 rpn_loc: 0.02762 rpn_acc: 0.98633)
+2018-10-16 22:53:33,680 - INFO - log_helper.py[:37] - Progress: 43 / 50 [86%], Speed: 0.988 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:34,027 - INFO - train.py[:122] - Epoch: [9][3/5] LR:0.001000 Time: 1.334396 Loss: 0.13550 (rpn_cls: 0.09332 rpn_loc: 0.04218 rpn_acc: 0.98047)
+2018-10-16 22:53:34,027 - INFO - log_helper.py[:37] - Progress: 44 / 50 [88%], Speed: 1.334 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-16 22:53:34,238 - INFO - train.py[:122] - Epoch: [9][4/5] LR:0.001000 Time: 1.642150 Loss: 0.19250 (rpn_cls: 0.12213 rpn_loc: 0.07037 rpn_acc: 0.96484)
+2018-10-16 22:53:34,239 - INFO - log_helper.py[:37] - Progress: 45 / 50 [90%], Speed: 1.642 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:05:58,371 - INFO - train_val.py[:66] - build dataloader done
+2018-10-17 11:05:58,530 - INFO - train_val.py[:75] - Voxelnet(
+  (feature_learnig): feature_learning_network(
+    (vfe1): VFE(
+      (fcn1): FCN(
+        (conv1): Conv2d(4, 16, kernel_size=(1, 1), stride=(1, 1))
+        (bn1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace)
+      )
+    )
+    (fcn1): FCN(
+      (conv1): Conv2d(32, 128, kernel_size=(1, 1), stride=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+  )
+  (conv3d): Conv_Middle_layers(
+    (conv1): Conv3d(
+      (conv1): Conv3d(128, 64, kernel_size=(3, 3, 3), stride=(2, 1, 1), padding=(1, 1, 1))
+      (bn1): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2): Conv3d(
+      (conv1): Conv3d(64, 64, kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1))
+      (bn1): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3): Conv3d(
+      (conv1): Conv3d(64, 64, kernel_size=(3, 3, 3), stride=(2, 1, 1), padding=(1, 1, 1))
+      (bn1): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+  )
+  (_rpn): RPN(
+    (conv1_1): Conv2d(
+      (conv1): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv1_2): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv1_3): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv1_4): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_1): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_2): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_3): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_4): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv2_5): Conv2d(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_1): Conv2d(
+      (conv1): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_2): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_3): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_4): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (conv3_5): Conv2d(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): ReLU(inplace)
+    )
+    (deconv1): ConvTranspose2d(256, 256, kernel_size=(4, 4), stride=(4, 4), padding=(0, 1), output_padding=(0, 1))
+    (deconv2): ConvTranspose2d(128, 256, kernel_size=(2, 2), stride=(2, 2), padding=(0, 1), output_padding=(0, 1))
+    (deconv3): ConvTranspose2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (rpn_head): NaiveRpnHead(
+      (conv3x3): Conv2d(768, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (relu3x3): ReLU(inplace)
+      (conv_cls): Conv2d(512, 4, kernel_size=(1, 1), stride=(1, 1))
+      (conv_loc): Conv2d(512, 14, kernel_size=(1, 1), stride=(1, 1))
+    )
+  )
+)
+2018-10-17 11:06:11,556 - INFO - train_val.py[:124] - Epoch: [0][0/2] LR:0.100000 Time: 0.482142 Loss: 0.74484 (rpn_cls: 0.68115 rpn_loc: 0.06369 rpn_acc: 0.57031)
+2018-10-17 11:06:11,557 - INFO - log_helper.py[:37] - Progress: -1 / 20 [-5%], Speed: 0.482 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:11,907 - INFO - train_val.py[:124] - Epoch: [0][1/2] LR:0.100000 Time: 0.832422 Loss: 0.61148 (rpn_cls: 0.59108 rpn_loc: 0.02040 rpn_acc: 0.99219)
+2018-10-17 11:06:11,907 - INFO - log_helper.py[:37] - Progress: 0 / 20 [0%], Speed: 0.832 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:12,473 - INFO - train_val.py[:124] - Epoch: [1][0/2] LR:0.100000 Time: 0.314959 Loss: 0.51508 (rpn_cls: 0.45328 rpn_loc: 0.06181 rpn_acc: 0.97656)
+2018-10-17 11:06:12,474 - INFO - log_helper.py[:37] - Progress: 1 / 20 [5%], Speed: 0.315 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:12,815 - INFO - train_val.py[:124] - Epoch: [1][1/2] LR:0.100000 Time: 0.655991 Loss: 0.28399 (rpn_cls: 0.26330 rpn_loc: 0.02069 rpn_acc: 0.99219)
+2018-10-17 11:06:12,815 - INFO - log_helper.py[:37] - Progress: 2 / 20 [10%], Speed: 0.656 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:13,366 - INFO - train_val.py[:124] - Epoch: [2][0/2] LR:0.100000 Time: 0.299656 Loss: 0.11288 (rpn_cls: 0.08102 rpn_loc: 0.03186 rpn_acc: 0.98828)
+2018-10-17 11:06:13,366 - INFO - log_helper.py[:37] - Progress: 3 / 20 [15%], Speed: 0.300 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:13,708 - INFO - train_val.py[:124] - Epoch: [2][1/2] LR:0.100000 Time: 0.640464 Loss: 0.18626 (rpn_cls: 0.13561 rpn_loc: 0.05065 rpn_acc: 0.98047)
+2018-10-17 11:06:13,709 - INFO - log_helper.py[:37] - Progress: 4 / 20 [20%], Speed: 0.640 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:14,227 - INFO - train_val.py[:124] - Epoch: [3][0/2] LR:0.100000 Time: 0.267386 Loss: 0.07682 (rpn_cls: 0.06254 rpn_loc: 0.01428 rpn_acc: 0.99219)
+2018-10-17 11:06:14,227 - INFO - log_helper.py[:37] - Progress: 5 / 20 [25%], Speed: 0.267 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:14,569 - INFO - train_val.py[:124] - Epoch: [3][1/2] LR:0.100000 Time: 0.608448 Loss: 0.25290 (rpn_cls: 0.19225 rpn_loc: 0.06065 rpn_acc: 0.97656)
+2018-10-17 11:06:14,570 - INFO - log_helper.py[:37] - Progress: 6 / 20 [30%], Speed: 0.608 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:15,108 - INFO - train_val.py[:124] - Epoch: [4][0/2] LR:0.010000 Time: 0.286329 Loss: 0.23550 (rpn_cls: 0.18134 rpn_loc: 0.05416 rpn_acc: 0.97656)
+2018-10-17 11:06:15,108 - INFO - log_helper.py[:37] - Progress: 7 / 20 [35%], Speed: 0.286 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:15,453 - INFO - train_val.py[:124] - Epoch: [4][1/2] LR:0.010000 Time: 0.630998 Loss: 0.09671 (rpn_cls: 0.08228 rpn_loc: 0.01442 rpn_acc: 0.99219)
+2018-10-17 11:06:15,453 - INFO - log_helper.py[:37] - Progress: 8 / 20 [40%], Speed: 0.631 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:16,000 - INFO - train_val.py[:124] - Epoch: [5][0/2] LR:0.010000 Time: 0.296412 Loss: 0.14432 (rpn_cls: 0.11694 rpn_loc: 0.02738 rpn_acc: 0.98828)
+2018-10-17 11:06:16,000 - INFO - log_helper.py[:37] - Progress: 9 / 20 [45%], Speed: 0.296 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:16,343 - INFO - train_val.py[:124] - Epoch: [5][1/2] LR:0.010000 Time: 0.637318 Loss: 0.17308 (rpn_cls: 0.13342 rpn_loc: 0.03966 rpn_acc: 0.98047)
+2018-10-17 11:06:16,343 - INFO - log_helper.py[:37] - Progress: 10 / 20 [50%], Speed: 0.637 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:16,889 - INFO - train_val.py[:124] - Epoch: [6][0/2] LR:0.001000 Time: 0.294300 Loss: 0.13581 (rpn_cls: 0.11006 rpn_loc: 0.02576 rpn_acc: 0.98828)
+2018-10-17 11:06:16,889 - INFO - log_helper.py[:37] - Progress: 11 / 20 [55%], Speed: 0.294 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:17,232 - INFO - train_val.py[:124] - Epoch: [6][1/2] LR:0.001000 Time: 0.635696 Loss: 0.16733 (rpn_cls: 0.12792 rpn_loc: 0.03941 rpn_acc: 0.98047)
+2018-10-17 11:06:17,232 - INFO - log_helper.py[:37] - Progress: 12 / 20 [60%], Speed: 0.636 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:17,773 - INFO - train_val.py[:124] - Epoch: [7][0/2] LR:0.001000 Time: 0.289781 Loss: 0.16680 (rpn_cls: 0.12729 rpn_loc: 0.03951 rpn_acc: 0.98047)
+2018-10-17 11:06:17,774 - INFO - log_helper.py[:37] - Progress: 13 / 20 [65%], Speed: 0.290 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:18,118 - INFO - train_val.py[:124] - Epoch: [7][1/2] LR:0.001000 Time: 0.633245 Loss: 0.13383 (rpn_cls: 0.10830 rpn_loc: 0.02554 rpn_acc: 0.98828)
+2018-10-17 11:06:18,118 - INFO - log_helper.py[:37] - Progress: 14 / 20 [70%], Speed: 0.633 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:18,652 - INFO - train_val.py[:124] - Epoch: [8][0/2] LR:0.001000 Time: 0.282514 Loss: 0.13335 (rpn_cls: 0.10788 rpn_loc: 0.02547 rpn_acc: 0.98828)
+2018-10-17 11:06:18,653 - INFO - log_helper.py[:37] - Progress: 15 / 20 [75%], Speed: 0.283 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:18,997 - INFO - train_val.py[:124] - Epoch: [8][1/2] LR:0.001000 Time: 0.626812 Loss: 0.16416 (rpn_cls: 0.12504 rpn_loc: 0.03912 rpn_acc: 0.98047)
+2018-10-17 11:06:18,998 - INFO - log_helper.py[:37] - Progress: 16 / 20 [80%], Speed: 0.627 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:19,544 - INFO - train_val.py[:124] - Epoch: [9][0/2] LR:0.001000 Time: 0.293209 Loss: 0.21959 (rpn_cls: 0.17424 rpn_loc: 0.04535 rpn_acc: 0.97656)
+2018-10-17 11:06:19,544 - INFO - log_helper.py[:37] - Progress: 17 / 20 [85%], Speed: 0.293 s/iter, ETA 0:00:00 (D:H:M)
+
+2018-10-17 11:06:19,889 - INFO - train_val.py[:124] - Epoch: [9][1/2] LR:0.001000 Time: 0.638517 Loss: 0.08114 (rpn_cls: 0.06487 rpn_loc: 0.01627 rpn_acc: 0.99219)
+2018-10-17 11:06:19,889 - INFO - log_helper.py[:37] - Progress: 18 / 20 [90%], Speed: 0.639 s/iter, ETA 0:00:00 (D:H:M)
+

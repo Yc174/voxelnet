@@ -5,11 +5,13 @@ import json
 import argparse
 
 import torch
+import logging
+import time
 
 from lib.dataset.kitti_dataset import KittiDataset, KittiDataloader
 from lib.models.voxelnet import Voxelnet
 from lib.functions import log_helper
-import logging
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-j', '--workers', default=2, type=int, metavar='N',
@@ -56,17 +58,19 @@ def build_data_loader(dataset, cfg):
         pass
     scales = cfg['shared']['scales']
     max_size = cfg['shared']['max_size']
-    train_dataset = Dataset(args.datadir, cfg)
-    train_loader = Dataloader(train_dataset, batch_size=args.batch_size, shuffle=False,
+    train_dataset = Dataset(args.datadir, cfg, split='train')
+    train_loader = Dataloader(train_dataset, batch_size=args.batch_size, shuffle=True,
                               num_workers=args.workers, pin_memory=False)
+    val_dataset = Dataset(args.datadir, cfg, split='val')
+    val_loader = Dataloader(val_dataset, batch_size=1, shuffle=False, num_workers=args.workers, pin_memory=False)
     logger.info('build dataloader done')
-    return train_loader
+    return train_loader, val_loader
 
 def main():
     log_helper.init_log('global', logging.INFO)
     logger = logging.getLogger('global')
     cfg = load_config(args.config)
-    train_loader = build_data_loader(args.dataset, cfg)
+    train_loader, val_loader = build_data_loader(args.dataset, cfg)
     model = Voxelnet(cfg=cfg)
     logger.info(model)
     trainable_params = [p for p in model.parameters() if p.requires_grad]
@@ -88,7 +92,9 @@ def main():
 
 def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
     logger = logging.getLogger('global')
+    t0 = time.time()
     for iter, input in enumerate(dataloader):
+        lr = adjust_learning_rate(optimizer, 1, gradual=True)
         x = {
             'cfg': cfg,
             'image': torch.autograd.Variable(input[0]).cuda(),
@@ -112,8 +118,11 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
         loss.backward()
         optimizer.step()
 
-        logger.info('Epoch: [%d][%d/%d] Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
-                    (epoch, iter, len(dataloader), loss.data[0], rpn_cls_loss.data[0], rpn_loc_loss.data[0], rpn_accuracy))
+        t2 = time.time()
+
+        logger.info('Epoch: [%d][%d/%d] LR:%f Time: %3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
+                    (epoch, iter, len(dataloader), lr, t2-t0, loss.data[0], rpn_cls_loss.data[0], rpn_loc_loss.data[0], rpn_accuracy))
+        log_helper.print_speed((epoch - 1) * len(dataloader) + iter + 1, t2 - t0, args.epochs * len(dataloader))
 
 def validate(dataloader, model, cfg):
     # switch to evaluate mode

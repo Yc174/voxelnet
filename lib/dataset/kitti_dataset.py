@@ -10,19 +10,26 @@ import lib.dataset.kitti_util as utils
 from lib.dataset.voxel_grid import VoxelGrid
 
 class KittiDataset(Dataset):
-    def __init__(self, root_dir, cfg, split='training'):
+    def __init__(self, root_dir, cfg, split='train'):
         self.root_dir = root_dir
         self.config = cfg
         self.voxel_size = cfg['shared']['voxel_size']
         area_extents = cfg['shared']['area_extents']
         self.area_extents = np.array(area_extents).reshape(3, 2)
-        self.kitti = kitti_object(root_dir, split)
-
-        if split == 'training':
+        idx_filename = ''
+        if split == 'train':
             idx_filename = 'train.txt'
-            idx_filename = os.path.join(os.path.dirname(__file__), idx_filename)
+            split = 'training'
+        elif split == 'val':
+            idx_filename = 'val.txt'
+            split = 'training' # rename
+        elif split == 'test':
+            idx_filename = 'test.txt'
+            split = 'testing'
+        idx_filename = os.path.join(os.path.dirname(__file__), idx_filename)
         self.img_ids = [int(line.rstrip()) for line in open(idx_filename)]
 
+        self.kitti = kitti_object(root_dir, split)
         # self.names = {'Car': 1, 'Pedestrian': 2, 'Cyclist': 3}
         self.names = {'Car': 1}
         self.num = len(self.img_ids)
@@ -182,7 +189,7 @@ def load_config(config_path):
 
 def test(root_dir):
     cfg = load_config("/home/yc/Myprojects/voxelnet_yc/voxelnet/experiments/config.json")
-    kitti = KittiDataset(root_dir=root_dir, cfg=cfg, split='training')
+    kitti = KittiDataset(root_dir=root_dir, cfg=cfg, split='val')
     loader = KittiDataloader(kitti, batch_size=2, shuffle=False, num_workers=2)
     for iter, input in enumerate(loader):
         imgs = input[0]
