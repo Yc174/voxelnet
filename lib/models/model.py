@@ -5,6 +5,7 @@ import functools
 import logging
 
 from lib.functions import anchor_target_3d
+from lib.functions import rpn_proposal
 logger = logging.getLogger('global')
 
 class model(nn.Module):
@@ -60,15 +61,15 @@ class model(nn.Module):
         #         ground_truth_bboxes=ground_truth_bboxes,
         #         ignore_regions=ignore_regions,
         #         image_info=image_info)
-        #     partial_fn['rpn_proposal_fn'] = functools.partial(
-        #         compute_rpn_proposals,
-        #         cfg=cfg['train_rpn_proposal_cfg'],
-        #         image_info=image_info)
-        # else:
-        #     partial_fn['rpn_proposal_fn'] = functools.partial(
-        #         compute_rpn_proposals,
-        #         cfg=cfg['test_rpn_proposal_cfg'],
-        #         image_info=image_info)
+            partial_fn['rpn_proposal_fn'] = functools.partial(
+                rpn_proposal.compute_rpn_proposals,
+                cfg=cfg['train_rpn_proposal_cfg'],
+                image_info=image_info)
+        else:
+            partial_fn['rpn_proposal_fn'] = functools.partial(
+                rpn_proposal.compute_rpn_proposals,
+                cfg=cfg['test_rpn_proposal_cfg'],
+                image_info=image_info)
         #     partial_fn['predict_bbox_fn'] = functools.partial(
         #         compute_predicted_bboxes,
         #         image_info = image_info,
@@ -105,9 +106,23 @@ class model(nn.Module):
                     self._add_rpn_loss(partial_fn['anchor_target_fn'],
                             rpn_pred_cls,
                             rpn_pred_loc)
+            # get rpn proposals
+            compute_rpn_proposals_fn = partial_fn['rpn_proposal_fn']
+            rpn_pred_cls = rpn_pred_cls.permute(0, 2, 3, 1).contiguous()
+            rpn_pred_cls = F.softmax(rpn_pred_cls.view(-1, 2), dim=1).view_as(rpn_pred_cls)
+            rpn_pred_cls = rpn_pred_cls.permute(0, 3, 1, 2)
+            proposals = compute_rpn_proposals_fn(rpn_pred_cls.data, rpn_pred_loc.data)
             outputs['losses'] = [rpn_loss_cls, rpn_loss_loc]
             outputs['accuracy'] = [rpn_acc]
-            outputs['predict'] = None
+            outputs['predict'] = [proposals]
+        else:
+            # rpn test
+            compute_rpn_proposals_fn = partial_fn['rpn_proposal_fn']
+            rpn_pred_cls = rpn_pred_cls.permute(0, 2, 3, 1).contiguous()
+            rpn_pred_cls = F.softmax(rpn_pred_cls.view(-1, 2), dim=1).view_as(rpn_pred_cls)
+            rpn_pred_cls = rpn_pred_cls.permute(0, 3, 1, 2)
+            proposals = compute_rpn_proposals_fn(rpn_pred_cls.data, rpn_pred_loc.data)
+            outputs['predict'] = [proposals]
         return outputs
 
 def smooth_l1_loss_with_sigma(pred, targets, sigma=3.0):

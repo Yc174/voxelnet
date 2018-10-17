@@ -112,7 +112,7 @@ def compute_loc_targets_3d(raw_bboxes, gt_bboxes):
     trgt_l = np.log(l_g / l_a)
     trgt_w = np.log(w_g / w_a)
     trgt_h = np.log(h_g / h_a)
-    trgt_theta = gt_bboxes[:, 6]- raw_bboxes[:, 6]
+    trgt_theta = gt_bboxes[:, 6] - raw_bboxes[:, 6]
     return np.vstack([trgt_ctr_x, trgt_ctr_y, trgt_ctr_z, trgt_l, trgt_w, trgt_h, trgt_theta]).transpose()
 
 def compute_loc_bboxes(raw_bboxes, deltas):
@@ -132,6 +132,29 @@ def compute_loc_bboxes(raw_bboxes, deltas):
         dt = np.vstack([dt_cx, dt_cy, dt_w, dt_h]).transpose()
         return center_to_corner(dt)
 
+def compute_loc_bboxes_3d(raw_bboxes, deltas):
+    '''
+        :argument
+            raw_bboxes, delta:[N, k] first dim must be equal
+        :returns
+            bboxes:[N, 7]
+        '''
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("error")
+        l_a = raw_bboxes[:, 3]
+        w_a = raw_bboxes[:, 4]
+        h_a = raw_bboxes[:, 5]
+        d_a = np.sqrt(l_a * l_a + w_a * w_a)
+
+        dt_cx = deltas[:, 0] * d_a + raw_bboxes[:, 0]
+        dt_cy = deltas[:, 1] * h_a + raw_bboxes[:, 1]
+        dt_cz = deltas[:, 2] * d_a + raw_bboxes[:, 2]
+        dt_l = np.exp(deltas[:, 3]) * l_a
+        dt_w = np.exp(deltas[:, 4]) * w_a
+        dt_h = np.exp(deltas[:, 5]) * h_a
+        dt_theta = deltas[:, 6] + raw_bboxes[:, 6]
+        dt = np.vstack([dt_cx, dt_cy, dt_cz, dt_l, dt_w, dt_h, dt_theta]).transpose()
+        return dt
 
 def clip_bbox(bbox, img_size):
     h, w = img_size[:2]

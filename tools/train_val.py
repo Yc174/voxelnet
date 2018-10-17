@@ -67,7 +67,7 @@ def build_data_loader(dataset, cfg):
     return train_loader, val_loader
 
 def main():
-    log_helper.init_log('global', logging.INFO)
+    log_helper.init_log('global', logging.DEBUG)
     logger = logging.getLogger('global')
     cfg = load_config(args.config)
     train_loader, val_loader = build_data_loader(args.dataset, cfg)
@@ -81,7 +81,8 @@ def main():
     model.cuda()
 
     if args.evaluate:
-        validate(train_loader, model, cfg)
+        validate(val_loader, model, cfg)
+        return
 
     for epoch in range(args.start_epoch, args.epochs):
         if epoch+1 in args.step_epochs:
@@ -126,8 +127,9 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
 
 def validate(dataloader, model, cfg):
     # switch to evaluate mode
+    logger = logging.getLogger('global')
     model.eval()
-    pass
+    logger.info('start validate')
 
 def adjust_learning_rate(optimizer, rate, gradual = True):
     """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
