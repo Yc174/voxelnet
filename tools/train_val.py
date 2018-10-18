@@ -11,6 +11,9 @@ import time
 from lib.dataset.kitti_dataset import KittiDataset, KittiDataloader
 from lib.models.voxelnet import Voxelnet
 from lib.functions import log_helper
+from lib.functions import bbox_helper
+from lib.functions import anchor_projector
+from lib.functions import box_3d_encoder
 
 
 parser = argparse.ArgumentParser()
@@ -129,7 +132,43 @@ def validate(dataloader, model, cfg):
     # switch to evaluate mode
     logger = logging.getLogger('global')
     model.eval()
+    total_rc = 0
+    total_gt = 0
     logger.info('start validate')
+    for iter, input in enumerate(dataloader):
+        gt_boxes = input[8]
+        voxel_with_points = input[6]
+        batch_size = voxel_with_points.shape[0]
+        x = {
+            'cfg': cfg,
+            'image': torch.autograd.Variable(input[0]).cuda(),
+            'points': input[1],
+            'indices': input[2],
+            'num_pts': input[3],
+            'leaf_out': input[4],
+            'voxel_indices': input[5],
+            'voxel': torch.autograd.Variable(input[6]).cuda(),
+            'gt_bboxes_2d': input[7],
+            'gt_bboxes_3d': input[8],
+        }
+
+        t0=time.time()
+        outputs = model(x)['predict']
+        t2 =time.time()
+        proposals = outputs[0].data.cpu().numpy()
+        if torch.is_tensor(gt_boxes):
+            gt_boxes = gt_boxes.cpu().numpy()
+        for b_ix in range(batch_size):
+            rois_per_points_cloud = proposals[proposals[:, 0] == b_ix]
+            gts_per_image = gt_boxes[b_ix]
+            # rpn recall
+            num_rc, num_gt = bbox_helper.compute_recall(rois_per_points_cloud[:, 1:1 + 7], gts_per_image)
+            total_gt += num_gt
+            total_rc += num_rc
+        logger.info('Test: [%d/%d] Time: %.3f %d/%d' % (iter, len(dataloader), t2 - t0, total_rc, total_gt))
+        log_helper.print_speed(iter + 1, t2 - t0, len(dataloader))
+    logger.info('rpn300 recall=%f'% (total_rc/total_gt))
+    return total_rc/total_gt
 
 def adjust_learning_rate(optimizer, rate, gradual = True):
     """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
