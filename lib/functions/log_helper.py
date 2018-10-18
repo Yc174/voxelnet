@@ -7,7 +7,7 @@ import math
 
 logs = set()
 
-def init_log(name, level = logging.INFO):
+def init_log(name, log_dir, level = logging.INFO):
     if (name, level) in logs: return
     logs.add((name, level))
     logger = logging.getLogger(name)
@@ -18,8 +18,10 @@ def init_log(name, level = logging.INFO):
     formatter = logging.Formatter(format_str)
     ch.setFormatter(formatter)
     logger.addHandler(ch)
-
-    f_handler = logging.FileHandler('log.log')
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    log_path = os.path.join(log_dir, 'log.log')
+    f_handler = logging.FileHandler(log_path)
     f_handler.setLevel(level)
     f_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(filename)s[:%(lineno)d] - %(message)s"))
     logger.addHandler(f_handler)
