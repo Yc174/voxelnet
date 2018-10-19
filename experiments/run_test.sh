@@ -6,7 +6,5 @@ export PYTHONPATH=$ROOT:$PYTHONPATH
 python tools/train_val.py --config=experiments/config.json \
     --dataset=kitti \
     --datadir=datasets/KITTI/object/ \
-    --save_dir=experiments/save \
-    --epochs=10 \
-    --step_epochs=5,7 \
-    --lr=0.1
+    --resume=experiments/save/checkpoint_e10.pth \
+    -e
