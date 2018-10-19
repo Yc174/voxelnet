@@ -73,7 +73,7 @@ class VoxelGridTest(unittest.TestCase):
             bad_extents)
 
         extents = np.array([[-50, 50], [-5, 5], [0, 70]])
-        voxel_grid.voxelize(points, 0.1, extents)
+        voxel_grid.voxelize(points, 1, extents)
 
         # Check number of divisions and leaf layout shape are correct and are
         # the same

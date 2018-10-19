@@ -42,6 +42,7 @@ class kitti_object(object):
         self.calib_dir = os.path.join(self.split_dir, 'calib')
         self.lidar_dir = os.path.join(self.split_dir, 'velodyne')
         self.label_dir = os.path.join(self.split_dir, 'label_2')
+        self.plane_dir = os.path.join(self.split_dir, 'planes')
         self.gt_depth_dir = os.path.join(self.root_dir, '..', 'data_scene_flow/training/disp_noc_0')
         self.pred_depth_dir = os.path.join(self.root_dir, '..', 'predict/pred')
 
@@ -67,6 +68,11 @@ class kitti_object(object):
         assert(idx<self.num_samples and self.split=='training') 
         label_filename = os.path.join(self.label_dir, '%06d.txt'%(idx))
         return utils.read_label(label_filename)
+
+    def get_ground_plane(self, idx):
+        assert (idx < self.num_samples)
+        plane = utils.get_road_plane(idx, self.plane_dir)
+        return plane
 
     def get_gt_depth_map(self, idx):
         assert (idx < self.num_samples and self.split == 'training')

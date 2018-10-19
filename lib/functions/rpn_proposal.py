@@ -15,7 +15,7 @@ def to_np_array(x):
     if isinstance(x, Variable): x = x.data
     return x.cpu().numpy() if torch.is_tensor(x) else x
 
-def compute_rpn_proposals(conv_cls, conv_loc, cfg, image_info):
+def compute_rpn_proposals(conv_cls, conv_loc, cfg, image_info, ground_plane = None):
     '''
     :argument
         cfg: configs
@@ -33,7 +33,7 @@ def compute_rpn_proposals(conv_cls, conv_loc, cfg, image_info):
     # [A, 7]
     area_extents = np.asarray(cfg['area_extents']).reshape(-1, 2)
     anchor_3d_sizes = np.asarray(cfg['anchor_3d_sizes']).reshape(-1, 3)
-    ground_plane = np.asarray(cfg['ground_plane'])
+    # ground_plane = np.asarray(cfg['ground_plane'])
     anchor_stride = np.asarray(cfg['anchor_stride'])
     bev_extents = area_extents[[0, 2]]
     anchors_overplane = anchor_helper.get_anchors_over_plane(featmap_h, featmap_w, area_extents, anchor_3d_sizes, anchor_stride,

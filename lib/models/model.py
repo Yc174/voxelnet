@@ -87,6 +87,7 @@ class model(nn.Module):
         voxel_with_points = input['voxel']
         gt_bboxes_2d = input['gt_bboxes_2d']
         gt_bboxes_3d = input['gt_bboxes_3d']
+        ground_plane = input['ground_plane']
 
         partial_fn = self._pin_args_to_fn(
                 cfg,

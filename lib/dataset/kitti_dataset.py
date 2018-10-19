@@ -43,6 +43,7 @@ class KittiDataset(Dataset):
         label_objects = self.kitti.get_label_objects(img_id)
         calib = self.kitti.get_calibration(img_id)
         pc_velo = self.kitti.get_lidar(img_id)
+        ground_plane = self.kitti.get_ground_plane(img_id)
         bboxes_2d = []
         bboxes_3d = []
         for object in label_objects:
@@ -81,7 +82,8 @@ class KittiDataset(Dataset):
                 voxel_grid.num_pts_in_voxel,
                 voxel_grid.leaf_layout,
                 voxel_grid.voxel_indices,
-                voxel_grid.voxel]
+                voxel_grid.voxel,
+                ground_plane]
 
 class KittiDataloader(DataLoader):
     def __init__(self, dataset, batch_size=1, shuffle=False, sampler=None, batch_sampler=None,
@@ -102,6 +104,7 @@ class KittiDataloader(DataLoader):
         leaf_out = zip_batch[7]
         s_voxel_indices = zip_batch[8]
         s_voxel = zip_batch[9]
+        ground_plane = zip_batch[10]
 
         max_img_h = max([_.shape[-2] for _ in images])
         max_img_w = max([_.shape[-1] for _ in images])
@@ -166,6 +169,7 @@ class KittiDataloader(DataLoader):
         leaf_out = torch.from_numpy(np.array(leaf_out))
         padded_voxel_indices = torch.from_numpy(np.stack(padded_voxel_indices, axis=0))
         voxel = torch.from_numpy(np.array(s_voxel))
+        ground_plane = torch.from_numpy(np.array(ground_plane))
 
         # print("padded img size:", padded_images.size())
         # print("padded gt_bboxes_3d size", padded_gt_bboxes_3d.size())
@@ -175,8 +179,9 @@ class KittiDataloader(DataLoader):
         # print("leaf_out size:", leaf_out.size())
         # print("padded voxel indices:", padded_voxel_indices.size())
         # print("voxel shape:", voxel.size())
+        # print('ground_plane shape:', ground_plane.size())
 
-        return padded_images, padded_points, padded_indices, padded_num_pts, leaf_out, padded_voxel_indices, voxel, padded_gt_bboxes_2d, padded_gt_bboxes_3d
+        return padded_images, padded_points, padded_indices, padded_num_pts, leaf_out, padded_voxel_indices, voxel, ground_plane, padded_gt_bboxes_2d, padded_gt_bboxes_3d
 
 def load_config(config_path):
     assert(os.path.exists(config_path))
@@ -189,7 +194,7 @@ def load_config(config_path):
 
 def test(root_dir):
     cfg = load_config("/home/yc/Myprojects/voxelnet_yc/voxelnet/experiments/config.json")
-    kitti = KittiDataset(root_dir=root_dir, cfg=cfg, split='val')
+    kitti = KittiDataset(root_dir=root_dir, cfg=cfg, split='train')
     loader = KittiDataloader(kitti, batch_size=2, shuffle=False, num_workers=2)
     for iter, input in enumerate(loader):
         imgs = input[0]

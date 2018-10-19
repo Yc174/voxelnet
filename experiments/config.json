@@ -2,7 +2,6 @@
     "shared": {
         "area_extents": [-40, 40, -3, 1, 0, 70],
         "anchor_3d_sizes": [3.9, 1.56, 1.6],
-        "ground_plane": [0.0, -1.0, 0.0, 0.0],
         "voxel_size": [1, 1, 1],
         "number_T": 100,
         "use_random_sampling": true,

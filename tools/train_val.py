@@ -139,8 +139,9 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
             'leaf_out': input[4],
             'voxel_indices': input[5],
             'voxel': torch.autograd.Variable(input[6]).cuda(),
-            'gt_bboxes_2d': input[7],
-            'gt_bboxes_3d': input[8],
+            'ground_plane': input[7],
+            'gt_bboxes_2d': input[8],
+            'gt_bboxes_3d': input[9],
         }
         outputs = model(x)
         rpn_cls_loss = outputs['losses'][0]
@@ -171,7 +172,7 @@ def validate(dataloader, model, cfg):
 
     logger.info('start validate')
     for iter, input in enumerate(dataloader):
-        gt_boxes = input[8]
+        gt_boxes = input[9]
         voxel_with_points = input[6]
         batch_size = voxel_with_points.shape[0]
         x = {
@@ -183,8 +184,9 @@ def validate(dataloader, model, cfg):
             'leaf_out': input[4],
             'voxel_indices': input[5],
             'voxel': torch.autograd.Variable(input[6]).cuda(),
-            'gt_bboxes_2d': input[7],
-            'gt_bboxes_3d': input[8],
+            'ground_plane': input[7],
+            'gt_bboxes_2d': input[8],
+            'gt_bboxes_3d': input[9],
         }
 
         t0=time.time()
