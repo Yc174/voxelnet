@@ -11,4 +11,5 @@ python tools/train_val.py --config=experiments/config.json \
     --datadir=datasets/KITTI/object/ \
     --save_dir=experiments/save \
     --resume=experiments/save/checkpoint_e10.pth \
-    -e
+    -e \
+    -v

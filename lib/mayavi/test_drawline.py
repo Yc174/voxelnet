@@ -16,4 +16,4 @@ def test_plot3d():
     return l
 
 test_plot3d()
-raw_input()
+input()

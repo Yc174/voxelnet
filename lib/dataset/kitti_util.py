@@ -414,8 +414,45 @@ def compute_box_3d(obj, P):
     #print 'corners_2d: ', corners_2d
     return corners_2d, np.transpose(corners_3d)
 
+def compute_numpy_boxes_3d(object, P):
+    ''' Takes an object and a projection matrix (P) and projects the 3d
+            bounding box into the image plane.
+            objects: (7)
+            Returns:
+                corners_2d: (8,2) array in left image coord.
+                corners_3d: (8,3) array in in rect camera coord.
+        '''
+    # compute rotational matrix around yaw axis
+    R = roty(object[-1])
 
-def compute_orientation_3d(obj, P):
+    # 3d bounding box dimensions
+    l = object[3]
+    w = object[4]
+    h = object[5]
+
+    # 3d bounding box corners
+    x_corners = [l / 2, l / 2, -l / 2, -l / 2, l / 2, l / 2, -l / 2, -l / 2];
+    y_corners = [0, 0, 0, 0, -h, -h, -h, -h];
+    z_corners = [w / 2, -w / 2, -w / 2, w / 2, w / 2, -w / 2, -w / 2, w / 2];
+
+    # rotate and translate 3d bounding box
+    corners_3d = np.dot(R, np.vstack([x_corners, y_corners, z_corners]))
+    # print corners_3d.shape
+    corners_3d[0, :] = corners_3d[0, :] + object[0];
+    corners_3d[1, :] = corners_3d[1, :] + object[1];
+    corners_3d[2, :] = corners_3d[2, :] + object[2];
+    # print 'cornsers_3d: ', corners_3d
+    # only draw 3d bounding box for objs in front of the camera
+    if np.any(corners_3d[2, :] < 0.1):
+        corners_2d = None
+        return corners_2d, np.transpose(corners_3d)
+
+    # project the 3d bounding box into the image plane
+    corners_2d = project_to_image(np.transpose(corners_3d), P);
+    # print 'corners_2d: ', corners_2d
+    return corners_2d, np.transpose(corners_3d)
+
+def compute_numpy_orientation_3d(obj, P):
     ''' Takes an object and a projection matrix (P) and projects the 3d
         object orientation vector into the image plane.
         Returns:
@@ -424,22 +461,52 @@ def compute_orientation_3d(obj, P):
     '''
     
     # compute rotational matrix around yaw axis
-    R = roty(obj.ry)
+    R = roty(obj[-1])
    
     # orientation in object coordinate system
-    orientation_3d = np.array([[0.0, obj.l],[0,0],[0,0]])
+    orientation_3d = np.array([[0.0, obj[3]],[0,0],[0,0]])
     
     # rotate and translate in camera coordinate system, project in image
     orientation_3d = np.dot(R, orientation_3d)
-    orientation_3d[0,:] = orientation_3d[0,:] + obj.t[0]
-    orientation_3d[1,:] = orientation_3d[1,:] + obj.t[1]
-    orientation_3d[2,:] = orientation_3d[2,:] + obj.t[2]
+    orientation_3d[0,:] = orientation_3d[0,:] + obj[0]
+    orientation_3d[1,:] = orientation_3d[1,:] + obj[1]
+    orientation_3d[2,:] = orientation_3d[2,:] + obj[2]
     
     # vector behind image plane?
     if np.any(orientation_3d[2,:]<0.1):
       orientation_2d = None
       return orientation_2d, np.transpose(orientation_3d)
     
+    # project orientation into the image plane
+    orientation_2d = project_to_image(np.transpose(orientation_3d), P);
+    return orientation_2d, np.transpose(orientation_3d)
+
+
+def compute_orientation_3d(obj, P):
+    ''' Takes an object and a projection matrix (P) and projects the 3d
+        object orientation vector into the image plane.
+        Returns:
+            orientation_2d: (2,2) array in left image coord.
+            orientation_3d: (2,3) array in in rect camera coord.
+    '''
+
+    # compute rotational matrix around yaw axis
+    R = roty(obj.ry)
+
+    # orientation in object coordinate system
+    orientation_3d = np.array([[0.0, obj.l], [0, 0], [0, 0]])
+
+    # rotate and translate in camera coordinate system, project in image
+    orientation_3d = np.dot(R, orientation_3d)
+    orientation_3d[0, :] = orientation_3d[0, :] + obj.t[0]
+    orientation_3d[1, :] = orientation_3d[1, :] + obj.t[1]
+    orientation_3d[2, :] = orientation_3d[2, :] + obj.t[2]
+
+    # vector behind image plane?
+    if np.any(orientation_3d[2, :] < 0.1):
+        orientation_2d = None
+        return orientation_2d, np.transpose(orientation_3d)
+
     # project orientation into the image plane
     orientation_2d = project_to_image(np.transpose(orientation_3d), P);
     return orientation_2d, np.transpose(orientation_3d)

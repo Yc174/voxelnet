@@ -18,8 +18,8 @@ class KittiDataset(Dataset):
         self.area_extents = np.array(area_extents).reshape(3, 2)
         idx_filename = ''
         if split == 'train':
-            # idx_filename = 'train.txt'
-            idx_filename = 'generated_Car_training.txt'
+            idx_filename = 'train.txt'
+            # idx_filename = 'generated_Car_training.txt'
             split = 'training'
         elif split == 'val':
             idx_filename = 'val.txt'
@@ -84,7 +84,9 @@ class KittiDataset(Dataset):
                 voxel_grid.leaf_layout,
                 voxel_grid.voxel_indices,
                 voxel_grid.voxel,
-                ground_plane]
+                ground_plane,
+                img_id
+                ]
 
 class KittiDataloader(DataLoader):
     def __init__(self, dataset, batch_size=1, shuffle=False, sampler=None, batch_sampler=None,
@@ -106,6 +108,7 @@ class KittiDataloader(DataLoader):
         s_voxel_indices = zip_batch[8]
         s_voxel = zip_batch[9]
         ground_plane = zip_batch[10]
+        img_ids = zip_batch[11]
 
         max_img_h = max([_.shape[-2] for _ in images])
         max_img_w = max([_.shape[-1] for _ in images])
@@ -181,8 +184,11 @@ class KittiDataloader(DataLoader):
         # print("padded voxel indices:", padded_voxel_indices.size())
         # print("voxel shape:", voxel.size())
         # print('ground_plane shape:', ground_plane.size())
+        print('img_ids :', img_ids)
 
-        return padded_images, padded_points, padded_indices, padded_num_pts, leaf_out, padded_voxel_indices, voxel, ground_plane, padded_gt_bboxes_2d, padded_gt_bboxes_3d
+        return padded_images, padded_points, padded_indices, padded_num_pts, leaf_out, padded_voxel_indices, voxel, ground_plane, \
+               padded_gt_bboxes_2d, padded_gt_bboxes_3d, img_ids
+
 
 def load_config(config_path):
     assert(os.path.exists(config_path))

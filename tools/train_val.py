@@ -10,6 +10,8 @@ import logging
 import time
 
 from lib.dataset.kitti_dataset import KittiDataset, KittiDataloader
+from lib.dataset.kitti_util import Calibration
+from lib.dataset.kitti_object import show_lidar_with_numpy_boxes
 from lib.models.voxelnet import Voxelnet
 from lib.functions import log_helper
 from lib.functions import bbox_helper
@@ -35,6 +37,8 @@ parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
+parser.add_argument('-v', '--visual', dest='visual', action='store_true',
+                    help='visualization detections on point-cloud')
 parser.add_argument('--step_epochs', dest='step_epochs', type=lambda x: list(map(int, x.split(','))),
                     default='-1', help='epochs to decay lr')
 parser.add_argument('--epochs', default=15, type=int, metavar='N',
@@ -172,22 +176,25 @@ def validate(dataloader, model, cfg):
     bev_extents = area_extents[[0, 2]]
 
     logger.info('start validate')
-    for iter, input in enumerate(dataloader):
-        gt_boxes = input[9]
-        voxel_with_points = input[6]
+    for iter, _input in enumerate(dataloader):
+        gt_boxes = _input[9]
+        voxel_with_points = _input[6]
         batch_size = voxel_with_points.shape[0]
+        # assert batch_size == 1
+        img_ids = _input[10]
+
         x = {
             'cfg': cfg,
-            'image': torch.autograd.Variable(input[0]).cuda(),
-            'points': input[1],
-            'indices': input[2],
-            'num_pts': input[3],
-            'leaf_out': input[4],
-            'voxel_indices': input[5],
-            'voxel': torch.autograd.Variable(input[6]).cuda(),
-            'ground_plane': input[7],
-            'gt_bboxes_2d': input[8],
-            'gt_bboxes_3d': input[9],
+            'image': torch.autograd.Variable(_input[0]).cuda(),
+            'points': _input[1],
+            'indices': _input[2],
+            'num_pts': _input[3],
+            'leaf_out': _input[4],
+            'voxel_indices': _input[5],
+            'voxel': torch.autograd.Variable(_input[6]).cuda(),
+            'ground_plane': _input[7],
+            'gt_bboxes_2d': _input[8],
+            'gt_bboxes_3d': _input[9],
         }
 
         t0=time.time()
@@ -198,6 +205,7 @@ def validate(dataloader, model, cfg):
             gt_boxes = gt_boxes.cpu().numpy()
 
         for b_ix in range(batch_size):
+
             rois_per_points_cloud = proposals[proposals[:, 0] == b_ix]
             gts_per_points_cloud = gt_boxes[b_ix]
             rois_per_points_cloud_anchor = box_3d_encoder.box_3d_to_anchor(rois_per_points_cloud[:, 1:1 + 7])
@@ -209,6 +217,20 @@ def validate(dataloader, model, cfg):
             num_rc, num_gt = bbox_helper.compute_recall(rois_per_points_cloud_bev, gts_per_points_cloud_bev)
             total_gt += num_gt
             total_rc += num_rc
+
+            if args.visual:
+                calib_dir = os.path.join(args.datadir, 'training/calib', '%06d.txt'%(img_ids[b_ix]))
+                calib = Calibration(calib_dir)
+
+                # Show all LiDAR points. Draw 3d box in LiDAR point cloud
+                print(' -------- LiDAR points and 3D boxes in velodyne coordinate --------')
+                show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), gts_per_points_cloud, calib, color=(1,1,1))
+                input()
+                print('proposals shape:', rois_per_points_cloud.shape)
+                show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), rois_per_points_cloud, calib,
+                                            color=(1, 1, 1))
+                input()
+
         logger.info('Test: [%d/%d] Time: %.3f %d/%d' % (iter, len(dataloader), t2 - t0, total_rc, total_gt))
         log_helper.print_speed(iter + 1, t2 - t0, len(dataloader))
     logger.info('rpn300 recall=%f'% (total_rc/total_gt))
