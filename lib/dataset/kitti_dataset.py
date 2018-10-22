@@ -26,7 +26,7 @@ class KittiDataset(Dataset):
         elif split == 'test':
             idx_filename = 'test.txt'
             split = 'testing'
-        idx_filename = os.path.join(os.path.dirname(__file__), idx_filename)
+        idx_filename = os.path.join(os.path.dirname(__file__), 'idx_files', idx_filename)
         self.img_ids = [int(line.rstrip()) for line in open(idx_filename)]
 
         self.kitti = kitti_object(root_dir, split)
