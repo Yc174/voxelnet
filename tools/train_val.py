@@ -19,7 +19,7 @@ from lib.functions import load_helper
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-j', '--workers', default=2, type=int, metavar='N',
+parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
 parser.add_argument('-b', '--batch_size', default=2, type=int,
                     metavar='N', help='mini-batch size (default: 2)')
@@ -159,6 +159,7 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
         logger.info('Epoch: [%d][%d/%d] LR:%f Time: %3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
                     (epoch, iter, len(dataloader), lr, t2-t0, loss.data[0], rpn_cls_loss.data[0], rpn_loc_loss.data[0], rpn_accuracy))
         log_helper.print_speed((epoch - 1) * len(dataloader) + iter + 1, t2 - t0, args.epochs * len(dataloader))
+        t0 = t2
 
 def validate(dataloader, model, cfg):
     # switch to evaluate mode

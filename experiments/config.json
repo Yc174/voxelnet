@@ -19,7 +19,7 @@
         "num_anchors": 2,
         "class_names": [
             "__background__",
-            "person", "bicycle", "car", "motorcycle", "airplane"
+            "Car"
         ],
         "fix_layer_num": 1,
         "allowed_border": 0,

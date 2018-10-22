@@ -35,11 +35,14 @@ def generate_idx_file(root_dir, labels=[], split='train'):
             if gt.type in labels:
                 tmp += 1
         if tmp != 0:
+            idx = '%06d'%idx
             new_ids.append(idx)
             f.writelines(str(idx)+'\n')
     f.close()
     print('labels: {}, split: {}, idx: {}'.format(labels, split, new_ids))
+    print('len of files: %d'%(len(new_ids)))
 
 if __name__ == '__main__':
     data_dir = os.path.join(os.path.dirname(__file__), '..', 'datasets/KITTI/object')
-    generate_idx_file(data_dir, labels=['Car'], split='train')
+    # {'Car': 1, 'Pedestrian': 2, 'Cyclist': 3}
+    generate_idx_file(data_dir, labels=['Cyclist'], split='train')

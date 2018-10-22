@@ -18,7 +18,8 @@ class KittiDataset(Dataset):
         self.area_extents = np.array(area_extents).reshape(3, 2)
         idx_filename = ''
         if split == 'train':
-            idx_filename = 'train.txt'
+            # idx_filename = 'train.txt'
+            idx_filename = 'generated_Car_training.txt'
             split = 'training'
         elif split == 'val':
             idx_filename = 'val.txt'

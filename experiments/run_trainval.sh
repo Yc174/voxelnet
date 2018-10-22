@@ -12,4 +12,6 @@ python tools/train_val.py --config=experiments/config.json \
     --save_dir=experiments/save \
     --epochs=10 \
     --step_epochs=5,7 \
-    --lr=0.1
+    --lr=0.1 \
+    --batch_size=2 \
+    --workers=2
