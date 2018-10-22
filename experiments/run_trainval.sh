@@ -2,6 +2,9 @@
 
 ROOT=..
 export PYTHONPATH=$ROOT:$PYTHONPATH
+ROOT=.
+export PYTHONPATH=$ROOT:$PYTHONPATH
+export | grep PYTHONPATH
 
 python tools/train_val.py --config=experiments/config.json \
     --dataset=kitti \
