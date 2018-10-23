@@ -81,16 +81,38 @@ class Voxelnet(model):
     def RandomSampleing(self):
         pass
 
-    def feature_extractor(self, voxel_with_points, num_pts, leaf_out, voxel_indices):
-        batch, channel, z, y, x, num_T, = voxel_with_points.size()
-        reshaped_voxel_with_points = voxel_with_points.view(batch, channel, y*z*x, num_T)
-        logger.debug("voxel_with_points size: {}".format(voxel_with_points.size()))
-        logger.debug("reshaped_voxel_with_points size: {}".format(reshaped_voxel_with_points.size()))
+    # def old_feature_extractor(self, voxel_with_points, num_pts, leaf_out, voxel_indices):
+    #     batch, channel, z, y, x, num_T, = voxel_with_points.size()
+    #     reshaped_voxel_with_points = voxel_with_points.view(batch, channel, y*z*x, num_T)
+    #     logger.debug("voxel_with_points size: {}".format(voxel_with_points.size()))
+    #     logger.debug("reshaped_voxel_with_points size: {}".format(reshaped_voxel_with_points.size()))
+    #
+    #     features = self.feature_learnig(reshaped_voxel_with_points)
+    #     features = features.view(batch, -1, z, y, x)
+    #     logger.debug('features learing size: {}'.format(features.size()))
+    #     out = self.conv3d(features)
+    #
+    #     return out
 
-        features = self.feature_learnig(reshaped_voxel_with_points)
-        features = features.view(batch, -1, z, y, x)
+    def feature_extractor(self, voxel_with_points, num_pts, leaf_out, voxel_indices, num_divisions):
+        batch, valid_voxels, num_T, channels = voxel_with_points.size()
+        voxel_with_points_reshaped = voxel_with_points.permute(0,3,1,2)
+        logger.debug("voxel_with_points size: {}".format(voxel_with_points.size()))
+        logger.debug("reshaped_voxel_with_points size: {}".format(voxel_with_points_reshaped.size()))
+
+        features = self.feature_learnig(voxel_with_points_reshaped)
+        features = features.view(batch, -1, valid_voxels)
+        logger.debug("after feature learning, the features shape: {}".format(features.size()))
         logger.debug('features learing size: {}'.format(features.size()))
-        out = self.conv3d(features)
+
+        new_features = torch.zeros([batch, features.shape[1]]+list(num_divisions[0].astype(int)))
+
+        for b_ix in range(batch):
+            for iter, loc in enumerate(voxel_indices[b_ix]):
+                # logger.debug("show loc information: {} ,{}, {}".format(loc[0], loc[1], loc[2]))
+                new_features[b_ix, :, loc[0], loc[1], loc[2]] = features[b_ix, :, iter]
+        logger.debug('new_features size: {}'.format(new_features.size()))
+        out = self.conv3d(new_features.cuda())
 
         return out
 

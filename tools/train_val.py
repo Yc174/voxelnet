@@ -80,7 +80,7 @@ def build_data_loader(dataset, cfg):
     return train_loader, val_loader
 
 def main():
-    log_helper.init_log('global', args.save_dir, logging.INFO)
+    log_helper.init_log('global', args.save_dir, logging.DEBUG)
     logger = logging.getLogger('global')
     cfg = load_config(args.config)
     train_loader, val_loader = build_data_loader(args.dataset, cfg)
@@ -132,20 +132,21 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
     model.cuda()
     model.train()
     t0 = time.time()
-    for iter, input in enumerate(dataloader):
+    for iter, _input in enumerate(dataloader):
         lr = adjust_learning_rate(optimizer, 1, gradual=True)
         x = {
             'cfg': cfg,
-            'image': torch.autograd.Variable(input[0]).cuda(),
-            'points': input[1],
-            'indices': input[2],
-            'num_pts': input[3],
-            'leaf_out': input[4],
-            'voxel_indices': input[5],
-            'voxel': torch.autograd.Variable(input[6]).cuda(),
-            'ground_plane': input[7],
-            'gt_bboxes_2d': input[8],
-            'gt_bboxes_3d': input[9],
+            'image': torch.autograd.Variable(_input[0]).cuda(),
+            'points': _input[1],
+            'indices': _input[2],
+            'num_pts': _input[3],
+            'leaf_out': _input[4],
+            'voxel_indices': _input[5],
+            'voxel_points': torch.autograd.Variable(_input[6]).cuda(),
+            'ground_plane': _input[7],
+            'gt_bboxes_2d': _input[8],
+            'gt_bboxes_3d': _input[9],
+            'num_divisions': _input[11]
         }
         outputs = model(x)
         rpn_cls_loss = outputs['losses'][0]
@@ -191,10 +192,11 @@ def validate(dataloader, model, cfg):
             'num_pts': _input[3],
             'leaf_out': _input[4],
             'voxel_indices': _input[5],
-            'voxel': torch.autograd.Variable(_input[6]).cuda(),
+            'voxel_points': torch.autograd.Variable(_input[6]).cuda(),
             'ground_plane': _input[7],
             'gt_bboxes_2d': _input[8],
             'gt_bboxes_3d': _input[9],
+            'num_divisions': _input[12]
         }
 
         t0=time.time()

@@ -112,20 +112,28 @@ class VoxelGrid(object):
         self.voxel_indices = (voxel_coords - self.min_voxel_coord).astype(int)
 
         if create_leaf_layout:
-
-            voxel = np.zeros(list(self.num_divisions.astype(int)) + [num_T, pts.shape[1]], dtype=np.float32)
-            for v in zip(unique_indices, self.num_pts_in_voxel, self.voxel_indices):
-                voxel_indices = v[2]
-                if v[1]<=num_T:
-
-                    voxel[voxel_indices[0],voxel_indices[1],voxel_indices[2],range(v[1]),:] = self.points[v[0]:v[0]+v[1], :]
-                    # assert voxel[voxel_indices[0],voxel_indices[1],voxel_indices[2],range(v[1]),:].shape == self.points[v[0]:v[0]+v[1], :].shape, \
-                    #     print(voxel[voxel_indices[0],voxel_indices[1],voxel_indices[2],range(v[1]),:].shape, self.points[v[0]:v[0]+v[1], :].shape)
+            padded_voxel_points = np.zeros([unique_indices.shape[0], num_T, pts.shape[1]], dtype=np.float32)
+            for i, v in enumerate(zip(unique_indices, num_points_in_voxel)):
+                if v[1]<num_T:
+                    padded_voxel_points[i,:v[1],:] = self.points[v[0]:v[0]+v[1], :]
                 else:
                     inds = np.random.choice(v[1], num_T)
-                    voxel[voxel_indices[0],voxel_indices[1],voxel_indices[2], :, :] = self.points[v[0]+inds, :]
-
-            self.voxel = np.transpose(voxel, axes=[4,1,0,2,3])
+                    padded_voxel_points[i, :, :] = self.points[v[0]+inds, :]
+            self.padded_voxel_points = padded_voxel_points
+            # voxel = np.zeros(list(self.num_divisions.astype(int)) + [num_T, pts.shape[1]], dtype=np.float32)
+            # for v in zip(unique_indices, self.num_pts_in_voxel, self.voxel_indices):
+            #     voxel_indices = v[2]
+            #     if v[1]<=num_T:
+            #
+            #         voxel[voxel_indices[0],voxel_indices[1],voxel_indices[2],range(v[1]),:] = self.points[v[0]:v[0]+v[1], :]
+            #         # assert voxel[voxel_indices[0],voxel_indices[1],voxel_indices[2],range(v[1]),:].shape == self.points[v[0]:v[0]+v[1], :].shape, \
+            #         #     print(voxel[voxel_indices[0],voxel_indices[1],voxel_indices[2],range(v[1]),:].shape, self.points[v[0]:v[0]+v[1], :].shape)
+            #     else:
+            #         inds = np.random.choice(v[1], num_T)
+            #         voxel[voxel_indices[0],voxel_indices[1],voxel_indices[2], :, :] = self.points[v[0]+inds, :]
+            #
+            # self.voxel = np.transpose(voxel, axes=[4,1,0,2,3])
+            self.voxel = np.zeros([2,2,2,2,2])
             # Create Voxel Object with -1 as empty/occluded
             self.leaf_layout = self.VOXEL_EMPTY * \
                                np.ones(self.num_divisions.astype(int))

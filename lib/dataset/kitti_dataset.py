@@ -18,8 +18,8 @@ class KittiDataset(Dataset):
         self.area_extents = np.array(area_extents).reshape(3, 2)
         idx_filename = ''
         if split == 'train':
-            # idx_filename = 'train.txt'
-            idx_filename = 'generated_Car_training.txt'
+            idx_filename = 'train.txt'
+            # idx_filename = 'generated_Car_training.txt'
             split = 'training'
         elif split == 'val':
             idx_filename = 'val.txt'
@@ -68,6 +68,9 @@ class KittiDataset(Dataset):
                                                                               True)
         _, area_inds = get_lidar_in_area_extent(pc_velo[:, :3], calib, self.area_extents)
         inds = (area_inds & img_fov_inds)
+        print("points number in area_extents: %d"%(len(area_inds[area_inds==1])))
+        print("points number in img_fov: %d"%len(img_fov_inds[img_fov_inds==1]))
+        print("points left: %d"%len(inds[inds==1]))
         imgfov_pc_rect = pc_rect[inds]
 
         voxel_grid = VoxelGrid()
@@ -83,9 +86,10 @@ class KittiDataset(Dataset):
                 voxel_grid.num_pts_in_voxel,
                 voxel_grid.leaf_layout,
                 voxel_grid.voxel_indices,
-                voxel_grid.voxel,
+                voxel_grid.padded_voxel_points,
                 ground_plane,
-                img_id
+                img_id,
+                voxel_grid.num_divisions
                 ]
 
 class KittiDataloader(DataLoader):
@@ -106,9 +110,10 @@ class KittiDataloader(DataLoader):
         num_pts_in_voxel = zip_batch[6]
         leaf_out = zip_batch[7]
         s_voxel_indices = zip_batch[8]
-        s_voxel = zip_batch[9]
+        s_voxel_points = zip_batch[9]
         ground_plane = zip_batch[10]
         img_ids = zip_batch[11]
+        num_divisions = zip_batch[12]
 
         max_img_h = max([_.shape[-2] for _ in images])
         max_img_w = max([_.shape[-1] for _ in images])
@@ -116,8 +121,8 @@ class KittiDataloader(DataLoader):
         max_num_gt_bboxes_3d = max([_.shape[0] for _ in ground_truth_bboxes_3d])
         max_points = max([_.shape[0] for _ in s_points])
         max_indices = max([_.shape[0] for _ in unique_indices])
-        max_num_pts = max([_.shape[0] for _ in num_pts_in_voxel])
-        max_voxel_indices = max([_.shape[0] for _ in s_voxel_indices])
+        # max_num_pts = max([_.shape[0] for _ in num_pts_in_voxel])
+        # max_voxel_indices = max([_.shape[0] for _ in s_voxel_indices])
 
         padded_images = []
         padded_gt_bboxes_2d = []
@@ -126,6 +131,7 @@ class KittiDataloader(DataLoader):
         padded_indices = []
         padded_num_pts = []
         padded_voxel_indices = []
+        padded_voxel_points = []
 
         for b_ix in range(batch_size):
             img = images[b_ix]
@@ -155,14 +161,19 @@ class KittiDataloader(DataLoader):
             padded_indices.append(new_indices)
 
             num_pts = num_pts_in_voxel[b_ix]
-            new_num_pts = np.zeros(max_num_pts)
+            new_num_pts = np.zeros(max_indices)
             new_num_pts[range(num_pts.shape[0])] = num_pts
             padded_num_pts.append(new_num_pts)
 
             voxel_indices = s_voxel_indices[b_ix]
-            new_voxel_indices = np.zeros([max_voxel_indices, voxel_indices.shape[-1]])
+            new_voxel_indices = np.zeros([max_indices, voxel_indices.shape[-1]], dtype=np.int32)
             new_voxel_indices[range(voxel_indices.shape[0]), :] = voxel_indices
             padded_voxel_indices.append(new_voxel_indices)
+
+            voxel_points = s_voxel_points[b_ix]
+            new_voxel_points = np.zeros([max_indices, voxel_points.shape[-2], voxel_points.shape[-1]], dtype=np.float32)
+            new_voxel_points[range(voxel_points.shape[0]), :] = voxel_points
+            padded_voxel_points.append(new_voxel_points)
 
         padded_images = torch.cat(padded_images, dim = 0)
         padded_gt_bboxes_2d = torch.from_numpy(np.stack(padded_gt_bboxes_2d, axis = 0))
@@ -172,8 +183,10 @@ class KittiDataloader(DataLoader):
         padded_num_pts = torch.from_numpy(np.stack(padded_num_pts, axis= 0))
         leaf_out = torch.from_numpy(np.array(leaf_out))
         padded_voxel_indices = torch.from_numpy(np.stack(padded_voxel_indices, axis=0))
-        voxel = torch.from_numpy(np.array(s_voxel))
+        # voxel = torch.from_numpy(np.array(s_voxel))
         ground_plane = torch.from_numpy(np.array(ground_plane))
+        padded_voxel_points = torch.from_numpy(np.stack(padded_voxel_points, axis=0))
+        num_divisions = np.asarray(num_divisions)
 
         # print("padded img size:", padded_images.size())
         # print("padded gt_bboxes_3d size", padded_gt_bboxes_3d.size())
@@ -184,10 +197,13 @@ class KittiDataloader(DataLoader):
         # print("padded voxel indices:", padded_voxel_indices.size())
         # print("voxel shape:", voxel.size())
         # print('ground_plane shape:', ground_plane.size())
-        print('img_ids :', img_ids)
+        # print('img_ids :', img_ids)
+        print("padded voxel_points shape:", padded_voxel_points.size())
+        print("num_divisions:", num_divisions)
 
-        return padded_images, padded_points, padded_indices, padded_num_pts, leaf_out, padded_voxel_indices, voxel, ground_plane, \
-               padded_gt_bboxes_2d, padded_gt_bboxes_3d, img_ids
+        return padded_images, padded_points, padded_indices, padded_num_pts, \
+               leaf_out, padded_voxel_indices, padded_voxel_points, ground_plane, \
+               padded_gt_bboxes_2d, padded_gt_bboxes_3d, img_ids, num_divisions
 
 
 def load_config(config_path):

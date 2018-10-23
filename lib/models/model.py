@@ -14,7 +14,7 @@ class model(nn.Module):
     def __init__(self, cfg):
         super(model, self).__init__()
 
-    def feature_extractor(self, voxel_with_points, num_pts, leaf_out, voxel_indices):
+    def feature_extractor(self, voxel_with_points, num_pts, leaf_out, voxel_indices, num_divisions):
         raise NotImplementedError
 
     def rpn(self, x):
@@ -99,10 +99,11 @@ class model(nn.Module):
         num_pts = input['num_pts']
         leaf_out = input['leaf_out']
         voxel_indices = input['voxel_indices']
-        voxel_with_points = input['voxel']
+        voxel_with_points = input['voxel_points']
         gt_bboxes_2d = input['gt_bboxes_2d']
         gt_bboxes_3d = input['gt_bboxes_3d']
         ground_plane = input['ground_plane']
+        num_divisions = input['num_divisions']
 
         partial_fn = self._pin_args_to_fn(
                 cfg,
@@ -111,7 +112,7 @@ class model(nn.Module):
                 ignore_regions=None)
 
         outputs = {'losses': [], 'predict': [], 'accuracy': []}
-        x = self.feature_extractor(voxel_with_points, num_pts, leaf_out, voxel_indices)
+        x = self.feature_extractor(voxel_with_points, num_pts, leaf_out, voxel_indices, num_divisions)
         rpn_pred_cls, rpn_pred_loc = self.rpn(x)
         logger.debug("rpn_pred_cls shape: {}".format(rpn_pred_cls.size()))
         logger.debug("rpn_pred_loc shape: {}".format(rpn_pred_loc.size()))
