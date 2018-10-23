@@ -234,7 +234,6 @@ def show_lidar_with_numpy_boxes(pc_rect, objects, calib,
         box3d_pts_2d, box3d_pts_3d = utils.compute_numpy_boxes_3d(obj, calib.P)
         box3d_pts_3d_velo = calib.project_rect_to_velo(box3d_pts_3d)
         # Draw heading arrow
-        # Draw heading arrow
         ori3d_pts_2d, ori3d_pts_3d = utils.compute_numpy_orientation_3d(obj, calib.P)
         ori3d_pts_3d_velo = calib.project_rect_to_velo(ori3d_pts_3d)
         x1, y1, z1 = ori3d_pts_3d_velo[0, :]

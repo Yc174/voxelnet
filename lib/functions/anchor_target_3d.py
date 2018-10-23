@@ -1,5 +1,4 @@
 #encoding: utf-8
-from lib.functions import anchor_helper
 from lib.functions import bbox_helper
 from lib.functions import box_3d_encoder
 from lib.functions import anchor_projector
@@ -13,7 +12,7 @@ def to_np_array(x):
     if isinstance(x, Variable): x = x.data
     return x.cpu().numpy() if torch.is_tensor(x) else x
 
-def compute_anchor_targets(feature_size, cfg, ground_truth_bboxes, image_info, ground_plane=None, ignore_regions = None, rpn_iou_type = '2d'):
+def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bboxes, image_info, ignore_regions = None, rpn_iou_type = '2d'):
     r'''
     :argument
         cfg.keys(): {
@@ -35,13 +34,9 @@ def compute_anchor_targets(feature_size, cfg, ground_truth_bboxes, image_info, g
     batch_size, num_anchors_7, featmap_h, featmap_w = feature_size
     num_anchors = num_anchors_7 // 7
     assert(num_anchors * 7 == num_anchors_7)
-    # [A, 7]
+    # # [A, 7]
     area_extents = np.asarray(cfg['area_extents']).reshape(-1, 2)
-    anchor_3d_sizes = np.asarray(cfg['anchor_3d_sizes']).reshape(-1, 3)
-    # ground_plane = np.asarray(cfg['ground_plane'])
-    anchor_stride = np.asarray(cfg['anchor_stride'])
     bev_extents = area_extents[[0, 2]]
-    anchors_overplane = anchor_helper.get_anchors_over_plane(featmap_h, featmap_w, area_extents, anchor_3d_sizes, anchor_stride, ground_plane)
 
     B = batch_size
     A = num_anchors

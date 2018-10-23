@@ -3,9 +3,11 @@ import torch.nn as nn
 import torch
 import functools
 import logging
+import numpy as np
 
 from lib.functions import anchor_target_3d
 from lib.functions import rpn_proposal
+from lib.functions import anchor_helper
 logger = logging.getLogger('global')
 
 class model(nn.Module):
@@ -21,8 +23,21 @@ class model(nn.Module):
     def rcnn(self, x, rois):
         pass
 
+    def generate_anchors(self, feature_size, cfg, ground_plane=None):
+
+        batch_size, num_anchors_7, featmap_h, featmap_w = feature_size
+        num_anchors = num_anchors_7 // 7
+        # [A, 7]
+        area_extents = np.asarray(cfg['area_extents']).reshape(-1, 2)
+        anchor_3d_sizes = np.asarray(cfg['anchor_3d_sizes']).reshape(-1, 3)
+        # ground_plane = np.asarray(cfg['ground_plane'])
+        anchor_stride = np.asarray(cfg['anchor_stride'])
+        anchors_overplane = anchor_helper.get_anchors_over_plane(featmap_h, featmap_w, area_extents, anchor_3d_sizes,
+                                                                 anchor_stride, ground_plane)
+        return anchors_overplane
+
     def _add_rpn_loss(self, compute_anchor_targets_fn, rpn_pred_cls,
-                      rpn_pred_loc):
+                      rpn_pred_loc, anchors):
         '''
         :param compute_anchor_targets_fn: functions to produce anchors' learning targets.
         :param rpn_pred_cls: [B, num_anchors * 2, h, w], output of rpn for classification.
@@ -31,7 +46,7 @@ class model(nn.Module):
         '''
         # [B, num_anchors * 2, h, w], [B, num_anchors * 4, h, w]
         cls_targets, loc_targets, loc_masks, loc_normalizer = \
-                compute_anchor_targets_fn(rpn_pred_loc.size())
+                compute_anchor_targets_fn(rpn_pred_loc.size(), anchors)
 
         # tranpose to the input format of softmax_loss function
         rpn_pred_cls = rpn_pred_cls.permute(0,2,3,1).contiguous().view(-1, 2)
@@ -101,18 +116,20 @@ class model(nn.Module):
         logger.debug("rpn_pred_cls shape: {}".format(rpn_pred_cls.size()))
         logger.debug("rpn_pred_loc shape: {}".format(rpn_pred_loc.size()))
 
+        anchors = self.generate_anchors(rpn_pred_loc.size(), cfg['shared'])
+
         if self.training:
             # train rpn
             rpn_loss_cls, rpn_loss_loc, rpn_acc = \
                     self._add_rpn_loss(partial_fn['anchor_target_fn'],
-                            rpn_pred_cls,
-                            rpn_pred_loc)
+                            rpn_pred_cls, rpn_pred_loc, anchors)
+
             # get rpn proposals
             compute_rpn_proposals_fn = partial_fn['rpn_proposal_fn']
             rpn_pred_cls = rpn_pred_cls.permute(0, 2, 3, 1).contiguous()
             rpn_pred_cls = F.softmax(rpn_pred_cls.view(-1, 2), dim=1).view_as(rpn_pred_cls)
             rpn_pred_cls = rpn_pred_cls.permute(0, 3, 1, 2)
-            proposals = compute_rpn_proposals_fn(rpn_pred_cls.data, rpn_pred_loc.data)
+            proposals = compute_rpn_proposals_fn(rpn_pred_cls.data, rpn_pred_loc.data, anchors)
             outputs['losses'] = [rpn_loss_cls, rpn_loss_loc]
             outputs['accuracy'] = [rpn_acc]
             outputs['predict'] = [proposals]
@@ -122,8 +139,8 @@ class model(nn.Module):
             rpn_pred_cls = rpn_pred_cls.permute(0, 2, 3, 1).contiguous()
             rpn_pred_cls = F.softmax(rpn_pred_cls.view(-1, 2), dim=1).view_as(rpn_pred_cls)
             rpn_pred_cls = rpn_pred_cls.permute(0, 3, 1, 2)
-            proposals = compute_rpn_proposals_fn(rpn_pred_cls.data, rpn_pred_loc.data)
-            outputs['predict'] = [proposals]
+            proposals = compute_rpn_proposals_fn(rpn_pred_cls.data, rpn_pred_loc.data, anchors)
+            outputs['predict'] = [proposals, anchors]
         return outputs
 
 def smooth_l1_loss_with_sigma(pred, targets, sigma=3.0):

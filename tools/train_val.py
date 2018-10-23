@@ -201,6 +201,7 @@ def validate(dataloader, model, cfg):
         outputs = model(x)['predict']
         t2 =time.time()
         proposals = outputs[0].data.cpu().numpy()
+
         if torch.is_tensor(gt_boxes):
             gt_boxes = gt_boxes.cpu().numpy()
 
@@ -227,7 +228,14 @@ def validate(dataloader, model, cfg):
                 show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), gts_per_points_cloud, calib, color=(1,1,1))
                 input()
                 print('proposals shape:', rois_per_points_cloud.shape)
-                show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), rois_per_points_cloud, calib,
+
+                show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), rois_per_points_cloud[:100, 1:1+7], calib,
+                                            color=(1, 1, 1))
+                input()
+                anchors = outputs[1]
+                total_anchors, _ = anchors.shape
+                idx = np.random.choice(total_anchors, 100)
+                show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), anchors[idx, :], calib,
                                             color=(1, 1, 1))
                 input()
 
