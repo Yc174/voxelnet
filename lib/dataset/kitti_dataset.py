@@ -166,7 +166,7 @@ class KittiDataloader(DataLoader):
             padded_num_pts.append(new_num_pts)
 
             voxel_indices = s_voxel_indices[b_ix]
-            new_voxel_indices = np.zeros([max_indices, voxel_indices.shape[-1]], dtype=np.int32)
+            new_voxel_indices = np.zeros([max_indices, voxel_indices.shape[-1]], dtype=np.int64)
             new_voxel_indices[range(voxel_indices.shape[0]), :] = voxel_indices
             padded_voxel_indices.append(new_voxel_indices)
 

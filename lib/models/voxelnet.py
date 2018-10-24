@@ -103,18 +103,30 @@ class Voxelnet(model):
         features = self.feature_learnig(voxel_with_points_reshaped)
         features = features.view(batch, -1, valid_voxels)
         logger.debug("after feature learning, the features shape: {}".format(features.size()))
-        # features = features.permute(0,2,1)
+        # batch, valid_voxels, channels
+        features = features.permute(0,2,1)
         z, y, x = num_divisions[0]
-        _new_features = torch.autograd.Variable(torch.zeros([batch, features.shape[1],z, y, x]), requires_grad=True)
-        new_features = _new_features.clone()
+        # _new_features = torch.autograd.Variable(torch.zeros([batch, features.shape[1],z, y, x]), requires_grad=True)
+        # new_features = _new_features.clone()
+        # for b_ix in range(batch):
+        #     for iter, loc in enumerate(voxel_indices[b_ix]):
+        #         # logger.debug("show loc information: {} ,{}, {}".format(loc[0], loc[1], loc[2]))
+        #         new_features[b_ix, :, loc[0], loc[1], loc[2]] = features[b_ix, :, iter]
+
+        _new_features = torch.autograd.Variable(torch.zeros([batch, z, y, x, features.shape[2]]), requires_grad=True)
+        new_features = _new_features.clone().cuda()
         for b_ix in range(batch):
-            for iter, loc in enumerate(voxel_indices[b_ix]):
-                # logger.debug("show loc information: {} ,{}, {}".format(loc[0], loc[1], loc[2]))
-                new_features[b_ix, :, loc[0], loc[1], loc[2]] = features[b_ix, :, iter]
+            b_ix = torch.tensor([b_ix])
+            indices_z = voxel_indices[b_ix, :, 0]
+            indices_y = voxel_indices[b_ix, :, 1]
+            indices_x = voxel_indices[b_ix, :, 2]
+
+            new_features[b_ix[0], indices_z, indices_y, indices_x] = features[b_ix[0], :, :]
+
         # new_features[:,:, voxel_indices]
-        new_features = new_features.permute(0,1,3,2,4)
+        new_features = new_features.permute(0,4,2,1,3)
         logger.debug('new_features size: {}'.format(new_features.size()))
-        out = self.conv3d(new_features.cuda())
+        out = self.conv3d(new_features)
 
         return out
 

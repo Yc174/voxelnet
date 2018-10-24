@@ -196,7 +196,7 @@ def validate(dataloader, model, cfg):
             'ground_plane': _input[7],
             'gt_bboxes_2d': _input[8],
             'gt_bboxes_3d': _input[9],
-            'num_divisions': _input[12]
+            'num_divisions': _input[11]
         }
 
         t0=time.time()
