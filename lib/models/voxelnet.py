@@ -103,14 +103,15 @@ class Voxelnet(model):
         features = self.feature_learnig(voxel_with_points_reshaped)
         features = features.view(batch, -1, valid_voxels)
         logger.debug("after feature learning, the features shape: {}".format(features.size()))
-        logger.debug('features learing size: {}'.format(features.size()))
-
-        new_features = torch.autograd.Variable(torch.zeros([batch, features.shape[1]]+list(num_divisions[0].astype(int))), requires_grad=True)
-
+        # features = features.permute(0,2,1)
+        z, y, x = num_divisions[0]
+        _new_features = torch.autograd.Variable(torch.zeros([batch, features.shape[1],z, y, x]), requires_grad=True)
+        new_features = _new_features.clone()
         for b_ix in range(batch):
             for iter, loc in enumerate(voxel_indices[b_ix]):
                 # logger.debug("show loc information: {} ,{}, {}".format(loc[0], loc[1], loc[2]))
                 new_features[b_ix, :, loc[0], loc[1], loc[2]] = features[b_ix, :, iter]
+        # new_features[:,:, voxel_indices]
         new_features = new_features.permute(0,1,3,2,4)
         logger.debug('new_features size: {}'.format(new_features.size()))
         out = self.conv3d(new_features.cuda())
