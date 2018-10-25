@@ -15,6 +15,7 @@ class KittiDataset(Dataset):
         self.voxel_size = cfg['shared']['voxel_size']
         area_extents = cfg['shared']['area_extents']
         self.area_extents = np.array(area_extents).reshape(3, 2)
+        self.num_T = cfg['shared']['number_T']
         idx_filename = ''
         if split == 'train':
             # idx_filename = 'train.txt'
@@ -60,24 +61,15 @@ class KittiDataset(Dataset):
         bboxes_3d = np.asarray(bboxes_3d).reshape(-1, 7)
         # print(bboxes_3d[:, 3:])
         t2 = time.time()
-        pc_rect = np.zeros_like(pc_velo)
-        pc_rect[:, 0:3] = calib.project_velo_to_rect(pc_velo[:, 0:3])
-        pc_rect[:, 3] = pc_velo[:, 3]
+
         img_height, img_width, img_channel = img.shape
-        imgfov_pc_velo, pc_image_coord, img_fov_inds = get_lidar_in_image_fov(pc_velo[:, 0:3],
-                                                                              calib, 0, 0, img_width, img_height,
-                                                                              True)
-        _, area_inds = get_lidar_in_area_extent(pc_velo[:, :3], calib, self.area_extents)
-        inds = (area_inds & img_fov_inds)
-        # inds = get_lidar_in_img_fov_and_area_extent(pc_velo[:, :3], pc_rect[:, :3],
-        #                                             calib, 0, 0, img_width, img_height,self.area_extents )
-        # print("points number in area_extents: %d"%(len(area_inds[area_inds==1])))
-        # print("points number in img_fov: %d"%len(img_fov_inds[img_fov_inds==1]))
-        # print("points left: %d"%len(inds[inds==1]))
-        imgfov_pc_rect = pc_rect[inds]
+        valid_pc_rect, inds = get_lidar_in_img_fov_and_area_extent(pc_velo[:, :3],
+                                                    calib, 0, 0, img_width, img_height, self.area_extents)
+        valid_pc_rect = np.hstack([valid_pc_rect, pc_velo[inds, -1, np.newaxis]])
+        # valid_pc_velo = pc_velo[inds]
         t3 = time.time()
         voxel_grid = VoxelGrid()
-        voxel_grid.voxelize(imgfov_pc_rect, voxel_size=self.voxel_size, extents=self.area_extents, create_leaf_layout=True)
+        voxel_grid.voxelize(valid_pc_rect, voxel_size=self.voxel_size, extents=self.area_extents, create_leaf_layout=True, num_T=self.num_T)
         t4 = time.time()
         # to_tensor = transforms.ToTensor()
         # img = to_tensor(img)
@@ -239,7 +231,7 @@ def test(root_dir):
     cfg_file = os.path.join(os.path.dirname(__file__), '../..', 'experiments/config.json')
     cfg = load_config(cfg_file)
     kitti = KittiDataset(root_dir=root_dir, cfg=cfg, split='train')
-    loader = KittiDataloader(kitti, batch_size=2, shuffle=False, num_workers=1)
+    loader = KittiDataloader(kitti, batch_size=1, shuffle=False, num_workers=1)
     t0 = time.time()
     for iter, _input in enumerate(loader):
         points = torch.autograd.Variable(_input[6]).cuda(),

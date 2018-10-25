@@ -376,7 +376,6 @@ def object_label_to_box_3d(obj_label):
 
     return box_3d
 
-
 def compute_box_3d(obj, P):
     ''' Takes an object and a projection matrix (P) and projects the 3d
         bounding box into the image plane.

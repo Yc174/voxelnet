@@ -155,14 +155,16 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
 
         loss = rpn_cls_loss + rpn_loc_loss
 
+        t1 = time.time()
+
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
         t2 = time.time()
 
-        logger.info('Epoch: [%d][%d/%d] LR:%f Time: %3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
-                    (epoch, iter, len(dataloader), lr, t2-t0, loss.data[0], rpn_cls_loss.data[0], rpn_loc_loss.data[0], rpn_accuracy))
+        logger.info('Epoch: [%d][%d/%d] LR:%f ForwardTime: %.3f BackwardTime: %.3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
+                    (epoch, iter, len(dataloader), lr, t1-t0, t2-t1, loss.data[0], rpn_cls_loss.data[0], rpn_loc_loss.data[0], rpn_accuracy))
         log_helper.print_speed((epoch - 1) * len(dataloader) + iter + 1, t2 - t0, args.epochs * len(dataloader))
         t0 = t2
 

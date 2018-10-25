@@ -30,13 +30,13 @@ class VoxelGrid(object):
         self.voxel_indices = []
         self.leaf_layout = []
 
-    def voxelize(self, pts, voxel_size, extents=None, create_leaf_layout=True, num_T=2):
+    def voxelize(self, pts, voxel_size, extents=None, create_leaf_layout=True, num_T=35):
         """
         The input for the voxelization is expected to be a PointCloud
         with N points in 4 dimension (x,y,z, i). Voxel size is the quantization size
         for the voxel grid.
 
-        :param pts: Point cloud as N x [x, y, z]
+        :param pts: Point cloud as N x [x, y, z, i]
         :param voxel_size: Quantization size for the grid, vd, vh, vw
         :param extents: Optional, specifies the full extents of the point cloud.
                         Used for creating same sized voxel grids.
@@ -88,11 +88,12 @@ class VoxelGrid(object):
             extents_transpose = np.array(extents).transpose()
             if extents_transpose.shape != (2, 3):
                 raise ValueError("Extents are the wrong shape {}".format(extents.shape))
+            # extents_transpose = calib.project_velo_to_rect(extents_transpose)
 
             # Set voxel grid extents
             self.min_voxel_coord = np.floor(extents_transpose[0] / voxel_size)
             self.max_voxel_coord = np.ceil(extents_transpose[1] / voxel_size) - 1
-
+            print(self.min_voxel_coord, self.max_voxel_coord)
             # Check that points are bounded by new extents
             if not (self.min_voxel_coord <= np.amin(voxel_coords, axis=0)).all():
                 raise ValueError("Extents are smaller than min_voxel_coord")
@@ -120,20 +121,6 @@ class VoxelGrid(object):
                     inds = np.random.choice(v[1], num_T)
                     padded_voxel_points[i, :, :] = self.points[v[0]+inds, :]
             self.padded_voxel_points = padded_voxel_points
-            # voxel = np.zeros(list(self.num_divisions.astype(int)) + [num_T, pts.shape[1]], dtype=np.float32)
-            # for v in zip(unique_indices, self.num_pts_in_voxel, self.voxel_indices):
-            #     voxel_indices = v[2]
-            #     if v[1]<=num_T:
-            #
-            #         voxel[voxel_indices[0],voxel_indices[1],voxel_indices[2],range(v[1]),:] = self.points[v[0]:v[0]+v[1], :]
-            #         # assert voxel[voxel_indices[0],voxel_indices[1],voxel_indices[2],range(v[1]),:].shape == self.points[v[0]:v[0]+v[1], :].shape, \
-            #         #     print(voxel[voxel_indices[0],voxel_indices[1],voxel_indices[2],range(v[1]),:].shape, self.points[v[0]:v[0]+v[1], :].shape)
-            #     else:
-            #         inds = np.random.choice(v[1], num_T)
-            #         voxel[voxel_indices[0],voxel_indices[1],voxel_indices[2], :, :] = self.points[v[0]+inds, :]
-            #
-            # self.voxel = np.transpose(voxel, axes=[4,1,0,2,3])
-            self.voxel = np.zeros([2,2,2,2,2])
             # Create Voxel Object with -1 as empty/occluded
             self.leaf_layout = self.VOXEL_EMPTY * \
                                np.ones(self.num_divisions.astype(int))
