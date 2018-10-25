@@ -102,30 +102,26 @@ class Voxelnet(model):
 
         features = self.feature_learnig(voxel_with_points_reshaped)
         features = features.view(batch, -1, valid_voxels)
-        logger.debug("after feature learning, the features shape: {}".format(features.size()))
         # batch, valid_voxels, channels
-        features = features.permute(0,2,1)
+        features = features.permute(0,2,1).contiguous()
+        features = features.view(batch*valid_voxels, -1)
+        logger.debug("after feature learning, the features shape: {}".format(features.size()))
+
         z, y, x = num_divisions[0]
-        # _new_features = torch.autograd.Variable(torch.zeros([batch, features.shape[1],z, y, x]), requires_grad=True)
-        # new_features = _new_features.clone()
-        # for b_ix in range(batch):
-        #     for iter, loc in enumerate(voxel_indices[b_ix]):
-        #         # logger.debug("show loc information: {} ,{}, {}".format(loc[0], loc[1], loc[2]))
-        #         new_features[b_ix, :, loc[0], loc[1], loc[2]] = features[b_ix, :, iter]
+        new_features = torch.autograd.Variable(torch.zeros([batch, z, y, x, features.size(-1)]), requires_grad=True).cuda()
+        logger.debug("new_features is leaf: {}, required_gred:{}".format(new_features.is_leaf, new_features.requires_grad))
 
-        _new_features = torch.autograd.Variable(torch.zeros([batch, z, y, x, features.shape[2]]), requires_grad=True)
-        new_features = _new_features.clone().cuda()
-        for b_ix in range(batch):
-            b_ix = torch.tensor([b_ix])
-            indices_z = voxel_indices[b_ix, :, 0]
-            indices_y = voxel_indices[b_ix, :, 1]
-            indices_x = voxel_indices[b_ix, :, 2]
+        voxel_indices = voxel_indices.view(-1, voxel_indices.size(-1))
+        b_ix = voxel_indices[:, 0]
+        indices_z = voxel_indices[:, 0]
+        indices_y = voxel_indices[:, 1]
+        indices_x = voxel_indices[:, 2]
+        # logger.debug("new_features[b_ix, indices_z, indices_y, indices_x]'s size: {}".format(new_features[b_ix, indices_z, indices_y, indices_x].size()))
 
-            new_features[b_ix[0], indices_z, indices_y, indices_x] = features[b_ix[0], :, :]
-
-        # new_features[:,:, voxel_indices]
+        new_features[b_ix, indices_z, indices_y, indices_x] = features
         new_features = new_features.permute(0,4,2,1,3)
         logger.debug('new_features size: {}'.format(new_features.size()))
+
         out = self.conv3d(new_features)
 
         return out

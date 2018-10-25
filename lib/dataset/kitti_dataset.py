@@ -18,8 +18,8 @@ class KittiDataset(Dataset):
         self.area_extents = np.array(area_extents).reshape(3, 2)
         idx_filename = ''
         if split == 'train':
-            idx_filename = 'train.txt'
-            # idx_filename = 'generated_Car_training.txt'
+            # idx_filename = 'train.txt'
+            idx_filename = 'generated_Car_training.txt'
             split = 'training'
         elif split == 'val':
             idx_filename = 'val.txt'
@@ -166,8 +166,9 @@ class KittiDataloader(DataLoader):
             padded_num_pts.append(new_num_pts)
 
             voxel_indices = s_voxel_indices[b_ix]
-            new_voxel_indices = np.zeros([max_indices, voxel_indices.shape[-1]], dtype=np.int64)
-            new_voxel_indices[range(voxel_indices.shape[0]), :] = voxel_indices
+            new_voxel_indices = np.zeros([max_indices, voxel_indices.shape[-1]+1], dtype=np.int64)
+            new_voxel_indices[range(voxel_indices.shape[0]), 1:] = voxel_indices
+            new_voxel_indices[range(voxel_indices.shape[0]), 0] = b_ix
             padded_voxel_indices.append(new_voxel_indices)
 
             voxel_points = s_voxel_points[b_ix]
