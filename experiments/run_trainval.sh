@@ -13,5 +13,5 @@ python tools/train_val.py --config=experiments/config.json \
     --epochs=10 \
     --step_epochs=5,7 \
     --lr=0.1 \
-    --batch_size=2 \
+    --batch_size=1 \
     --workers=2

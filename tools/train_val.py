@@ -80,7 +80,7 @@ def build_data_loader(dataset, cfg):
     return train_loader, val_loader
 
 def main():
-    log_helper.init_log('global', args.save_dir, logging.DEBUG)
+    log_helper.init_log('global', args.save_dir, logging.INFO)
     logger = logging.getLogger('global')
     cfg = load_config(args.config)
     train_loader, val_loader = build_data_loader(args.dataset, cfg)
@@ -136,7 +136,7 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
         lr = adjust_learning_rate(optimizer, 1, gradual=True)
         x = {
             'cfg': cfg,
-            'image': torch.autograd.Variable(_input[0]).cuda(),
+            # 'image': torch.autograd.Variable(_input[0]).cuda(),
             'points': _input[1],
             'indices': _input[2],
             'num_pts': _input[3],
@@ -186,7 +186,7 @@ def validate(dataloader, model, cfg):
 
         x = {
             'cfg': cfg,
-            'image': torch.autograd.Variable(_input[0]).cuda(),
+            # 'image': torch.autograd.Variable(_input[0]).cuda(),
             'points': _input[1],
             'indices': _input[2],
             'num_pts': _input[3],

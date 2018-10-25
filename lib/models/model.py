@@ -93,7 +93,7 @@ class model(nn.Module):
 
     def forward(self, input):
         cfg = input['cfg']
-        images = input['image']
+        # images = input['image']
         points = input['points']
         indices = input['indices']
         num_pts = input['num_pts']

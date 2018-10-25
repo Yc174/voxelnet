@@ -181,6 +181,27 @@ def get_lidar_in_area_extent(pc_velo, calib, area_extent):
 
         return pts[extent_inds], extent_inds
 
+def get_lidar_in_img_fov_and_area_extent(pc_velo, pc_rect, calib,
+                                         xmin, ymin, xmax, ymax, area_extent, clip_distance=2.0):
+    ''' Filter lidar points, keep those in image FOV  and area_extent'''
+    pts_2d = calib.project_rect_to_image(pc_rect)
+
+    fov_inds = (pts_2d[:, 0] < xmax) & (pts_2d[:, 0] >= xmin) & \
+               (pts_2d[:, 1] < ymax) & (pts_2d[:, 1] >= ymin)
+    valid_inds = fov_inds & (pc_velo[:, 0] > clip_distance)
+
+    if area_extent is not None:
+        # Check provided extents
+        extents_transpose = np.array(area_extent).transpose()
+        if extents_transpose.shape != (2, 3):
+            raise ValueError("Extents are the wrong shape {}".format(area_extent.shape))
+        extent_inds = (pc_velo[:, 0] >= extents_transpose[0, 0]) & (pc_velo[:, 0] < extents_transpose[1, 0]) & \
+                      (pc_velo[:, 1] >= extents_transpose[0, 1]) & (pc_velo[:, 1] < extents_transpose[1, 1]) & \
+                      (pc_velo[:, 2] >= extents_transpose[0, 2]) & (pc_velo[:, 2] < extents_transpose[1, 2])
+        valid_inds = valid_inds & extent_inds
+    return valid_inds
+
+
 def show_lidar_with_boxes(pc_velo, objects, calib,
                           img_fov=False, img_width=None, img_height=None): 
     ''' Show all LiDAR points.
