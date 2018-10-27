@@ -10,6 +10,6 @@ python tools/train_val.py --config=experiments/config.json \
     --dataset=kitti \
     --datadir=datasets/KITTI/object/ \
     --save_dir=experiments/save \
-    --resume=experiments/save/checkpoint_e2.pth \
+    --resume=experiments/save/checkpoint_e10.pth \
     -e \
     #-v

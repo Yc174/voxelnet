@@ -234,15 +234,15 @@ def validate(dataloader, model, cfg):
                 input()
                 print('proposals shape:', rois_per_points_cloud.shape)
 
-                show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), rois_per_points_cloud[:100, 1:1+7], calib,
+                show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), rois_per_points_cloud[:10, 1:1+7], calib,
                                             color=(1, 1, 1))
                 input()
-                anchors = outputs[1]
-                total_anchors, _ = anchors.shape
-                idx = np.random.choice(total_anchors, 100)
-                show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), anchors[idx, :], calib,
-                                            color=(1, 1, 1))
-                input()
+                # anchors = outputs[1]
+                # total_anchors, _ = anchors.shape
+                # idx = np.random.choice(total_anchors, 100)
+                # show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), anchors[idx, :], calib,
+                #                             color=(1, 1, 1))
+                # input()
 
         logger.info('Test: [%d/%d] Time: %.3f %d/%d' % (iter, len(dataloader), t2 - t0, total_rc, total_gt))
         log_helper.print_speed(iter + 1, t2 - t0, len(dataloader))

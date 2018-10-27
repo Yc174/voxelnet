@@ -10,6 +10,9 @@ def generate_idx_file(root_dir, labels=[], split='train'):
     for l in labels:
         if l not in total_labels:
             raise AssertionError('labels not in total_labels!!')
+    base_dir = os.path.join(os.path.dirname(__file__), '..', 'lib/dataset/idx_files')
+    generated_file = '_'.join(labels)
+    generated_file = os.path.join(base_dir, 'generated_%s_%s.txt'%(generated_file, split))
     idx_filename = ''
     if split == 'train':
         idx_filename = 'train_backup.txt'
@@ -20,9 +23,7 @@ def generate_idx_file(root_dir, labels=[], split='train'):
     elif split == 'test':
         idx_filename = 'test.txt'
         split = 'testing'
-    idx_filename = os.path.join(os.path.dirname(__file__), '..', 'lib/dataset/idx_files', idx_filename)
-    generated_file = '_'.join(labels)
-    generated_file = os.path.join(os.path.dirname(idx_filename), 'generated_%s_%s.txt'%(generated_file, split))
+    idx_filename = os.path.join(base_dir, idx_filename)
     img_ids = [int(line.rstrip()) for line in open(idx_filename)]
 
     kitti = kitti_object(root_dir, split)
@@ -45,4 +46,4 @@ def generate_idx_file(root_dir, labels=[], split='train'):
 if __name__ == '__main__':
     data_dir = os.path.join(os.path.dirname(__file__), '..', 'datasets/KITTI/object')
     # {'Car': 1, 'Pedestrian': 2, 'Cyclist': 3}
-    generate_idx_file(data_dir, labels=['Cyclist'], split='train')
+    generate_idx_file(data_dir, labels=['Car'], split='val')
