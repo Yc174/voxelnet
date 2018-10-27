@@ -73,7 +73,7 @@ class KittiDataset(Dataset):
         t4 = time.time()
         # to_tensor = transforms.ToTensor()
         # img = to_tensor(img)
-        print('sys used time, load data: %.5f, get gt: %.5f,get valid points: %.5f, voxel_grid: %.5f'%(t1-t0, t2-t1, t3-t2,t4-t3))
+        # print('sys used time, load data: %.5f, get gt: %.5f,get valid points: %.5f, voxel_grid: %.5f'%(t1-t0, t2-t1, t3-t2,t4-t3))
         return [None,
                 bboxes_2d,
                 bboxes_3d,

@@ -38,7 +38,7 @@ class NaiveRpnHead(nn.Module):
 class RPN(nn.Module):
     def __init__(self, num_classes, num_anchors):
         super(RPN, self).__init__()
-        self.conv1_1 = Conv2d(64*6, 128, 2, padding=(1, 1))
+        self.conv1_1 = Conv2d(64*2, 128, 2, padding=(1, 1))
         self.conv1_2 = Conv2d(128, 128, 1, padding=(1, 1))
         self.conv1_3 = Conv2d(128, 128, 1, padding=(1, 1))
         self.conv1_4 = Conv2d(128, 128, 1, padding=(1, 1))
@@ -57,8 +57,10 @@ class RPN(nn.Module):
         self.conv3_4 = Conv2d(256, 256, 1, padding=(1, 1))
         self.conv3_5 = Conv2d(256, 256, 1, padding=(1, 1))
 
-        self.deconv1 = nn.ConvTranspose2d(256, 256, 4, 4, (0, 1), (0, 1))
-        self.deconv2 = nn.ConvTranspose2d(128, 256, 2, 2, (0, 1), (0, 1))
+        # self.deconv1 = nn.ConvTranspose2d(256, 256, 4, 4, (0, 1), (0, 1))
+        # self.deconv2 = nn.ConvTranspose2d(128, 256, 2, 2, (0, 1), (0, 1))
+        self.deconv1 = nn.ConvTranspose2d(256, 256, 4, 4, 0)
+        self.deconv2 = nn.ConvTranspose2d(128, 256, 2, 2, 0)
         self.deconv3 = nn.ConvTranspose2d(128, 256, 3, 1, 1)
 
         self.rpn_head = NaiveRpnHead(256*3, num_classes, num_anchors)

@@ -73,14 +73,14 @@ def build_data_loader(dataset, cfg):
     max_size = cfg['shared']['max_size']
     train_dataset = Dataset(args.datadir, cfg, split='train')
     train_loader = Dataloader(train_dataset, batch_size=args.batch_size, shuffle=True,
-                              num_workers=args.workers, pin_memory=False)
+                              num_workers=args.workers, pin_memory=True)
     val_dataset = Dataset(args.datadir, cfg, split='val')
     val_loader = Dataloader(val_dataset, batch_size=1, shuffle=False, num_workers=args.workers, pin_memory=False)
     logger.info('build dataloader done')
     return train_loader, val_loader
 
 def main():
-    log_helper.init_log('global', args.save_dir, logging.INFO)
+    log_helper.init_log('global', args.save_dir, logging.DEBUG)
     logger = logging.getLogger('global')
     cfg = load_config(args.config)
     train_loader, val_loader = build_data_loader(args.dataset, cfg)
@@ -148,6 +148,7 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
             'gt_bboxes_3d': _input[9],
             'num_divisions': _input[11]
         }
+        t1 = time.time()
         outputs = model(x)
         rpn_cls_loss = outputs['losses'][0]
         rpn_loc_loss = outputs['losses'][1]
@@ -155,18 +156,18 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
 
         loss = rpn_cls_loss + rpn_loc_loss
 
-        t1 = time.time()
+        t2 = time.time()
 
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        t2 = time.time()
+        t3 = time.time()
 
-        logger.info('Epoch: [%d][%d/%d] LR:%f ForwardTime: %.3f BackwardTime: %.3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
-                    (epoch, iter, len(dataloader), lr, t1-t0, t2-t1, loss.data[0], rpn_cls_loss.data[0], rpn_loc_loss.data[0], rpn_accuracy))
-        log_helper.print_speed((epoch - 1) * len(dataloader) + iter + 1, t2 - t0, args.epochs * len(dataloader))
-        t0 = t2
+        logger.info('Epoch: [%d][%d/%d] LR:%f Load data: %.3f ForwardTime: %.3f BackwardTime: %.3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
+                    (epoch, iter, len(dataloader), lr, t1-t0, t2-t1, t3-t2, loss.data[0], rpn_cls_loss.data[0], rpn_loc_loss.data[0], rpn_accuracy))
+        log_helper.print_speed((epoch - 1) * len(dataloader) + iter + 1, t3 - t0, args.epochs * len(dataloader))
+        t0 = t3
 
 def validate(dataloader, model, cfg):
     # switch to evaluate mode

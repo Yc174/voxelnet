@@ -4,6 +4,7 @@ from .region_proposal_network import RPN
 import torch.nn.functional as F
 import torch.nn as nn
 import torch
+import time
 
 import logging
 logger = logging.getLogger('global')
@@ -40,7 +41,7 @@ class Conv_Middle_layers(nn.Module):
     def __init__(self, ):
         super(Conv_Middle_layers, self).__init__()
         self.conv1 = Conv3d(128, 64, stride=(2, 1, 1), padding=(1, 1, 1))
-        self.conv2 = Conv3d(64, 64, stride=(1, 1, 1), padding=(1, 1, 1))
+        self.conv2 = Conv3d(64, 64, stride=(1, 1, 1), padding=(0, 1, 1))
         self.conv3 = Conv3d(64, 64, stride=(2, 1, 1), padding=(1, 1, 1))
 
     def forward(self, x):
@@ -77,6 +78,8 @@ class Voxelnet(model):
         self.feature_learnig = feature_learning_network()
         self.conv3d = Conv_Middle_layers()
         self._rpn = RPN(self.num_classes, self.num_anchors)
+        # device = torch.device('cuda')
+        # self.new_features_tmp = torch.zeros([1, 400, 11, 352, 128], device=device, requires_grad=True)
 
     def RandomSampleing(self):
         pass
@@ -100,6 +103,7 @@ class Voxelnet(model):
         logger.debug("voxel_with_points size: {}".format(voxel_with_points.size()))
         logger.debug("reshaped_voxel_with_points size: {}".format(voxel_with_points_reshaped.size()))
 
+        t0 =time.time()
         features = self.feature_learnig(voxel_with_points_reshaped)
         features = features.view(batch, -1, valid_voxels)
         # batch, valid_voxels, channels
@@ -107,23 +111,32 @@ class Voxelnet(model):
         features = features.view(batch*valid_voxels, -1)
         logger.debug("after feature learning, the features shape: {}".format(features.size()))
 
+        t1=time.time()
         z, y, x = num_divisions[0]
-        new_features = torch.autograd.Variable(torch.zeros([batch, z, y, x, features.size(-1)]), requires_grad=True).cuda()
+        device =torch.device('cuda')
+        # new_features_tmp = torch.zeros([batch, z, y, x, features.size(-1)], device=device,requires_grad=True)
+        # new_features = new_features_tmp.clone()
+        new_features = torch.zeros([batch, z, y, x, features.size(-1)], device=device, requires_grad=True)
+        t1_0 =time.time()
         logger.debug("new_features is leaf: {}, required_gred:{}".format(new_features.is_leaf, new_features.requires_grad))
-
+        t1_1 = time.time()
         voxel_indices = voxel_indices.view(-1, voxel_indices.size(-1))
         b_ix = voxel_indices[:, 0]
-        indices_z = voxel_indices[:, 0]
-        indices_y = voxel_indices[:, 1]
-        indices_x = voxel_indices[:, 2]
+        indices_z = voxel_indices[:, 1]
+        indices_y = voxel_indices[:, 2]
+        indices_x = voxel_indices[:, 3]
         # logger.debug("new_features[b_ix, indices_z, indices_y, indices_x]'s size: {}".format(new_features[b_ix, indices_z, indices_y, indices_x].size()))
-
-        new_features[b_ix, indices_z, indices_y, indices_x] = features
+        t1_2 =time.time()
+        new_features.detach()[b_ix, indices_z, indices_y, indices_x] = features
         new_features = new_features.permute(0,4,2,1,3)
         logger.debug('new_features size: {}'.format(new_features.size()))
+        logger.debug('featues requires_grad: {}'.format(features.requires_grad))
 
+        t2=time.time()
         out = self.conv3d(new_features)
-
+        t3=time.time()
+        logger.debug("USED TIME, feature_learnig:{}, VFE_3D featture:{}, 3D conv:{}".format(t1-t0, t2-t1,t3-t0))
+        logger.debug("VFE to 3D feature, create_variable:{} {}, get indices:{}, assignment:{}".format(t1_0-t1, t1_1-t1_0, t1_2-t1_1, t2-t1_2))
         return out
 
     def rpn(self, x):

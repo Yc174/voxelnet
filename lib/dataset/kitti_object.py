@@ -190,8 +190,8 @@ def get_lidar_in_img_fov_and_area_extent(pc_velo, calib, xmin, ymin, xmax, ymax,
     fov_inds = (pts_2d[:, 0] < xmax) & (pts_2d[:, 0] >= xmin) & \
                (pts_2d[:, 1] < ymax) & (pts_2d[:, 1] >= ymin)
     valid_inds = fov_inds & (pc_velo[:, 0] > clip_distance)
-    print("total points: %d"%(pc_velo.shape[0]))
-    print("points number in img_fov: %d" % len(valid_inds[valid_inds == 1]))
+    # print("total points: %d"%(pc_velo.shape[0]))
+    # print("points number in img_fov: %d" % len(valid_inds[valid_inds == 1]))
     if area_extent is not None:
         # Check provided extents
         extents_transpose = np.array(area_extent).transpose()
@@ -201,8 +201,8 @@ def get_lidar_in_img_fov_and_area_extent(pc_velo, calib, xmin, ymin, xmax, ymax,
                       (pc_rect[:, 1] >= extents_transpose[0, 1]) & (pc_rect[:, 1] < extents_transpose[1, 1]) & \
                       (pc_rect[:, 2] >= extents_transpose[0, 2]) & (pc_rect[:, 2] < extents_transpose[1, 2])
         valid_inds = valid_inds & extent_inds
-        print("points number in area_extents: %d"%(len(extent_inds[extent_inds==1])))
-        print("points left: %d"%len(valid_inds[valid_inds==1]))
+        # print("points number in area_extents: %d"%(len(extent_inds[extent_inds==1])))
+        # print("points left: %d"%len(valid_inds[valid_inds==1]))
     return pc_rect[valid_inds], valid_inds
 
 

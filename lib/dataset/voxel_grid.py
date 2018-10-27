@@ -93,7 +93,7 @@ class VoxelGrid(object):
             # Set voxel grid extents
             self.min_voxel_coord = np.floor(extents_transpose[0] / voxel_size)
             self.max_voxel_coord = np.ceil(extents_transpose[1] / voxel_size) - 1
-            print(self.min_voxel_coord, self.max_voxel_coord)
+            # print(self.min_voxel_coord, self.max_voxel_coord)
             # Check that points are bounded by new extents
             if not (self.min_voxel_coord <= np.amin(voxel_coords, axis=0)).all():
                 raise ValueError("Extents are smaller than min_voxel_coord")
