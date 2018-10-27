@@ -114,9 +114,8 @@ class Voxelnet(model):
         t1=time.time()
         z, y, x = num_divisions[0]
         device =torch.device('cuda')
-        # new_features_tmp = torch.zeros([batch, z, y, x, features.size(-1)], device=device,requires_grad=True)
-        # new_features = new_features_tmp.clone()
-        new_features = torch.zeros([batch, z, y, x, features.size(-1)], device=device, requires_grad=True)
+        new_features = torch.zeros([batch, z, y, x, features.size(-1)], device=device, requires_grad=False)
+
         t1_0 =time.time()
         logger.debug("new_features is leaf: {}, required_gred:{}".format(new_features.is_leaf, new_features.requires_grad))
         t1_1 = time.time()
@@ -127,7 +126,7 @@ class Voxelnet(model):
         indices_x = voxel_indices[:, 3]
         # logger.debug("new_features[b_ix, indices_z, indices_y, indices_x]'s size: {}".format(new_features[b_ix, indices_z, indices_y, indices_x].size()))
         t1_2 =time.time()
-        new_features.detach()[b_ix, indices_z, indices_y, indices_x] = features
+        new_features[b_ix, indices_z, indices_y, indices_x] = features
         new_features = new_features.permute(0,4,2,1,3)
         logger.debug('new_features size: {}'.format(new_features.size()))
         logger.debug('featues requires_grad: {}'.format(features.requires_grad))

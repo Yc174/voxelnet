@@ -3,6 +3,8 @@ from torch.utils.data import DataLoader, Dataset
 import numpy as np
 import os
 import time
+import logging
+logger =logging.getLogger('global')
 
 from lib.dataset.kitti_object import kitti_object, get_lidar_in_image_fov, get_lidar_in_area_extent, get_lidar_in_img_fov_and_area_extent
 import lib.dataset.kitti_util as utils
@@ -74,7 +76,7 @@ class KittiDataset(Dataset):
         t4 = time.time()
         # to_tensor = transforms.ToTensor()
         # img = to_tensor(img)
-        # print('sys used time, load data: %.5f, get gt: %.5f,get valid points: %.5f, voxel_grid: %.5f'%(t1-t0, t2-t1, t3-t2,t4-t3))
+        logger.debug('sys used time, load data: %.5f, get gt: %.5f,get valid points: %.5f, voxel_grid: %.5f'%(t1-t0, t2-t1, t3-t2,t4-t3))
         return [None,
                 bboxes_2d,
                 bboxes_3d,
@@ -111,6 +113,7 @@ class KittiDataloader(DataLoader):
                                             num_workers, self._collate_fn, pin_memory, drop_last)
 
     def _collate_fn(self, batch):
+        t0 = time.time()
         batch_size = len(batch)
         zip_batch = list(zip(*batch))
         # images = zip_batch[0]
@@ -213,6 +216,8 @@ class KittiDataloader(DataLoader):
         # print('img_ids :', img_ids)
         # print("padded voxel_points shape:", padded_voxel_points.size())
         # print("num_divisions:", num_divisions)
+        t1 = time.time()
+        logger.debug("load data used time: {} s".format(t1-t0))
 
         return padded_images, padded_points, padded_indices, padded_num_pts, \
                leaf_out, padded_voxel_indices, padded_voxel_points, ground_plane, \
@@ -232,12 +237,12 @@ def test(root_dir):
     cfg_file = os.path.join(os.path.dirname(__file__), '../..', 'experiments/config.json')
     cfg = load_config(cfg_file)
     kitti = KittiDataset(root_dir=root_dir, cfg=cfg, split='train')
-    loader = KittiDataloader(kitti, batch_size=1, shuffle=False, num_workers=1)
+    loader = KittiDataloader(kitti, batch_size=8, shuffle=True, num_workers=2, pin_memory=True)
     t0 = time.time()
     for iter, _input in enumerate(loader):
         points = torch.autograd.Variable(_input[6]).cuda(),
         t2 =time.time()
-        print('iter%d, time: %.5f s/iter'%(iter, t2-t0))
+        print('iter%d, time: %.5f s/iter, total: s'%(iter, t2-t0))
         t0 = t2
 
 if __name__ == '__main__':

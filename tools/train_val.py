@@ -73,14 +73,14 @@ def build_data_loader(dataset, cfg):
     max_size = cfg['shared']['max_size']
     train_dataset = Dataset(args.datadir, cfg, split='train')
     train_loader = Dataloader(train_dataset, batch_size=args.batch_size, shuffle=True,
-                              num_workers=args.workers, pin_memory=True)
+                              num_workers=args.workers, pin_memory=False)
     val_dataset = Dataset(args.datadir, cfg, split='val')
     val_loader = Dataloader(val_dataset, batch_size=1, shuffle=False, num_workers=args.workers, pin_memory=False)
     logger.info('build dataloader done')
     return train_loader, val_loader
 
 def main():
-    log_helper.init_log('global', args.save_dir, logging.DEBUG)
+    log_helper.init_log('global', args.save_dir, logging.INFO)
     logger = logging.getLogger('global')
     cfg = load_config(args.config)
     train_loader, val_loader = build_data_loader(args.dataset, cfg)
@@ -163,9 +163,8 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
         optimizer.step()
 
         t3 = time.time()
-
-        logger.info('Epoch: [%d][%d/%d] LR:%f Load data: %.3f ForwardTime: %.3f BackwardTime: %.3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
-                    (epoch, iter, len(dataloader), lr, t1-t0, t2-t1, t3-t2, loss.data[0], rpn_cls_loss.data[0], rpn_loc_loss.data[0], rpn_accuracy))
+        logger.info('Epoch: [%d][%d/%d] LR:%f ForwardTime: %.3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
+                    (epoch, iter, len(dataloader), lr, t2-t1, loss.cpu().data.numpy(), rpn_cls_loss.cpu().data.numpy(), rpn_loc_loss.cpu().data.numpy(), rpn_accuracy.cpu().data.numpy()))
         log_helper.print_speed((epoch - 1) * len(dataloader) + iter + 1, t3 - t0, args.epochs * len(dataloader))
         t0 = t3
 
