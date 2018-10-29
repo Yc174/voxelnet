@@ -18,6 +18,7 @@ from lib.functions import bbox_helper
 from lib.functions import anchor_projector
 from lib.functions import box_3d_encoder
 from lib.functions import load_helper
+from lib.evaluator import evaluator_utils
 
 
 parser = argparse.ArgumentParser()
@@ -77,13 +78,14 @@ def build_data_loader(dataset, cfg):
     val_dataset = Dataset(args.datadir, cfg, split='val')
     val_loader = Dataloader(val_dataset, batch_size=1, shuffle=False, num_workers=args.workers, pin_memory=False)
     logger.info('build dataloader done')
-    return train_loader, val_loader
+    return train_dataset, val_dataset,\
+           train_loader, val_loader
 
 def main():
     log_helper.init_log('global', args.save_dir, logging.INFO)
     logger = logging.getLogger('global')
     cfg = load_config(args.config)
-    train_loader, val_loader = build_data_loader(args.dataset, cfg)
+    train_dataset, val_dataset, train_loader, val_loader = build_data_loader(args.dataset, cfg)
     model = Voxelnet(cfg=cfg)
     logger.info(model)
     trainable_params = [p for p in model.parameters() if p.requires_grad]
@@ -99,7 +101,7 @@ def main():
     model.cuda()
 
     if args.evaluate:
-        validate(val_loader, model, cfg)
+        validate(val_dataset, val_loader, model, cfg)
         return
     recall = 0
     best_recall = 0
@@ -109,7 +111,7 @@ def main():
         train(train_loader, model, optimizer, epoch, cfg)
         # evaluate on validation set
         if (epoch + 1) % 5 == 0 or epoch + 1 == args.epochs:
-            recall = validate(val_loader, model, cfg)
+            recall = validate(val_dataset, val_loader, model, cfg)
 
         # remember best prec@1 and save checkpoint
         is_best = recall > best_recall
@@ -168,7 +170,7 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
         log_helper.print_speed((epoch - 1) * len(dataloader) + iter + 1, t3 - t0, args.epochs * len(dataloader))
         t0 = t3
 
-def validate(dataloader, model, cfg):
+def validate(dataset, dataloader, model, cfg):
     # switch to evaluate mode
     logger = logging.getLogger('global')
     model.eval()
@@ -242,6 +244,8 @@ def validate(dataloader, model, cfg):
                 # show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), anchors[idx, :], calib,
                 #                             color=(1, 1, 1))
                 # input()
+
+            evaluator_utils.save_predictions_in_kitti_format(dataset, )
 
         logger.info('Test: [%d/%d] Time: %.3f %d/%d' % (iter, len(dataloader), t2 - t0, total_rc, total_gt))
         log_helper.print_speed(iter + 1, t2 - t0, len(dataloader))

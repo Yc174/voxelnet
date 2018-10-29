@@ -18,6 +18,7 @@ class KittiDataset(Dataset):
         area_extents = cfg['shared']['area_extents']
         self.area_extents = np.array(area_extents).reshape(3, 2)
         self.num_T = cfg['shared']['number_T']
+        self.split = split
         idx_filename = ''
         if split == 'train':
             # idx_filename = 'train.txt'
