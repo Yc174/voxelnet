@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import logging
 import time
+from multiprocessing import Process
 
 from lib.dataset.kitti_dataset import KittiDataset, KittiDataloader
 from lib.dataset.kitti_util import Calibration
@@ -261,8 +262,20 @@ def validate(dataset, dataloader, model, cfg, epoch=-1):
 
     logger.info('rpn300 recall=%f'% (total_rc/total_gt))
     evaluate_name = dataset.id2names[1]+'_'+dataset.split
-    evaluator_utils.run_kitti_native_script(native_code_copy, evaluate_name, score_threshold, epoch)
-    evaluator_utils.run_kitti_native_script_with_05_iou(native_code_copy, evaluate_name, score_threshold, epoch)
+
+    # Create a separate processes to run the native evaluation
+    native_eval_proc = Process(
+        target=evaluator_utils.run_kitti_native_script, args=(
+            native_code_copy, evaluate_name, score_threshold, epoch))
+    native_eval_proc_05_iou = Process(
+        target=evaluator_utils.run_kitti_native_script_with_05_iou,
+        args=(native_code_copy, evaluate_name, score_threshold, epoch))
+    # Don't call join on this cuz we do not want to block
+    # this will cause one zombie process - should be fixed later.
+    native_eval_proc.start()
+    native_eval_proc_05_iou.start()
+    # evaluator_utils.run_kitti_native_script(native_code_copy, evaluate_name, score_threshold, epoch)
+    # evaluator_utils.run_kitti_native_script_with_05_iou(native_code_copy, evaluate_name, score_threshold, epoch)
     return total_rc/total_gt
 
 def save_checkpoint(state, is_best, filename='checkpoint.pth'):
