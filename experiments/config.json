@@ -1,6 +1,6 @@
 {
     "shared": {
-        "area_extents": [-40, 40, -3, 1, 0, 70.4],
+        "area_extents": [-40, 40, -1, 3, 0, 70.4],
         "anchor_3d_sizes": [3.9, 1.56, 1.6],
         "voxel_size": [0.2, 0.4, 0.2],
         "number_T": 35,
@@ -29,8 +29,8 @@
     "train_anchor_target_cfg": {
         "rpn_batch_size": 256,
         "nms_iou_thresh": 0.7,
-        "positive_iou_thresh": 0.7,
-        "negative_iou_thresh": 0.3,
+        "positive_iou_thresh": 0.6,
+        "negative_iou_thresh": 0.45,
         "positive_percent": 0.5,
         "ignore_iou_thresh": 0.5
     },
@@ -52,8 +52,9 @@
      "test_rpn_proposal_cfg": {
         "nms_iou_thresh": 0.7,
         "pre_nms_top_n": 1000,
-        "post_nms_top_n": 1000,
-        "roi_min_size": 0
+        "post_nms_top_n": 300,
+        "roi_min_size": 0,
+        "score_threshold": 0.1
     },
     "test_predict_bbox_cfg": {
         "nms_iou_thresh": 0.5,

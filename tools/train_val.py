@@ -19,6 +19,7 @@ from lib.functions import anchor_projector
 from lib.functions import box_3d_encoder
 from lib.functions import load_helper
 from lib.evaluator import evaluator_utils
+import _sys_init
 
 
 parser = argparse.ArgumentParser()
@@ -111,7 +112,7 @@ def main():
         train(train_loader, model, optimizer, epoch, cfg)
         # evaluate on validation set
         if (epoch + 1) % 5 == 0 or epoch + 1 == args.epochs:
-            recall = validate(val_dataset, val_loader, model, cfg)
+            recall = validate(val_dataset, val_loader, model, cfg, epoch=epoch)
 
         # remember best prec@1 and save checkpoint
         is_best = recall > best_recall
@@ -170,7 +171,7 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
         log_helper.print_speed((epoch - 1) * len(dataloader) + iter + 1, t3 - t0, args.epochs * len(dataloader))
         t0 = t3
 
-def validate(dataset, dataloader, model, cfg):
+def validate(dataset, dataloader, model, cfg, epoch=-1):
     # switch to evaluate mode
     logger = logging.getLogger('global')
     model.eval()
@@ -179,6 +180,13 @@ def validate(dataset, dataloader, model, cfg):
     total_gt = 0
     area_extents = np.asarray(cfg['shared']['area_extents']).reshape(-1, 2)
     bev_extents = area_extents[[0, 2]]
+
+    score_threshold = cfg['test_rpn_proposal_cfg']['score_threshold']
+    valid_samples = 0
+    native_code_copy = _sys_init.root_dir()+'/experiments/predictions/kitti_native_eval/'
+    evaluator_utils.copy_kitti_native_code(native_code_copy)
+    predictions_3d_dir = evaluator_utils.get_kitti_predictions(score_threshold, epoch)
+
 
     logger.info('start validate')
     for iter, _input in enumerate(dataloader):
@@ -245,11 +253,16 @@ def validate(dataset, dataloader, model, cfg):
                 #                             color=(1, 1, 1))
                 # input()
 
-            evaluator_utils.save_predictions_in_kitti_format(dataset, )
-
-        logger.info('Test: [%d/%d] Time: %.3f %d/%d' % (iter, len(dataloader), t2 - t0, total_rc, total_gt))
+            valid, total_samples= evaluator_utils.save_predictions_in_kitti_format(dataset, rois_per_points_cloud[:,1:], img_ids[b_ix], predictions_3d_dir, score_threshold)
+            valid_samples += valid
+            logger.info('valid samples: %d/%d'%(valid_samples, total_samples))
+        logger.info('Test valid instance: [%d/%d] Time: %.3f %d/%d' % (iter, len(dataloader), t2 - t0, total_rc, total_gt))
         log_helper.print_speed(iter + 1, t2 - t0, len(dataloader))
+
     logger.info('rpn300 recall=%f'% (total_rc/total_gt))
+    evaluate_name = dataset.id2names[1]+'_'+dataset.split
+    evaluator_utils.run_kitti_native_script(native_code_copy, evaluate_name, score_threshold, epoch)
+    evaluator_utils.run_kitti_native_script_with_05_iou(native_code_copy, evaluate_name, score_threshold, epoch)
     return total_rc/total_gt
 
 def save_checkpoint(state, is_best, filename='checkpoint.pth'):

@@ -143,6 +143,9 @@ def project_to_image_space(anchor, P, image_shape):
 
     pts_2d, pts_3d = compute_numpy_boxes_3d(anchor, P)
 
+    if pts_2d is None:
+        return None, None
+
     # Get the min and maxes of image coordinates
     x1 = np.amin(pts_2d[:, 0])
     y1 = np.amin(pts_2d[:, 1])

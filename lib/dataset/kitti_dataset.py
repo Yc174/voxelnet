@@ -4,6 +4,7 @@ import numpy as np
 import os
 import time
 import logging
+import collections
 logger =logging.getLogger('global')
 
 from lib.dataset.kitti_object import kitti_object, get_lidar_in_image_fov, get_lidar_in_area_extent, get_lidar_in_img_fov_and_area_extent
@@ -36,7 +37,11 @@ class KittiDataset(Dataset):
 
         self.kitti = kitti_object(root_dir, split)
         # self.names = {'Car': 1, 'Pedestrian': 2, 'Cyclist': 3}
-        self.names = {'Car': 1}
+        self.names = {"__background__": 0, 'Car': 1}
+        id2names = collections.OrderedDict()
+        for name, id in self.names.items():
+            id2names[int(id)] = name
+        self.id2names = id2names
         self.num = len(self.img_ids)
 
     def __len__(self):

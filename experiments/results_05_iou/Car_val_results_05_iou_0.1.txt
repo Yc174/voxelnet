@@ -1,0 +1,7 @@
+-1
+  done.
+car_detection AP: 0.000000 0.000000 0.000000
+car_detection_BEV AP: 0.000000 0.000000 0.000000
+car_heading_BEV AP: 0.000000 0.000000 0.000000
+car_detection_3D AP: 0.000000 0.000000 0.000000
+car_heading_3D AP: 0.000000 0.000000 0.000000

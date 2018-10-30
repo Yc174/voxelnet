@@ -1,3 +1,7 @@
+experiments/predictions/
+*.eps
+*.gp
+*.png
 *.log
 *.pth
 *.o
