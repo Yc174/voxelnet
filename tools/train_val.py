@@ -6,6 +6,7 @@ import argparse
 
 import numpy as np
 import torch
+import torch.nn as nn
 import logging
 import time
 from multiprocessing import Process
@@ -50,6 +51,8 @@ parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
 parser.add_argument('--lr', '--learning-rate', default=0.001, type=float,
                     metavar='LR', help='initial learning rate')
+parser.add_argument('--dist', dest='dist', default=1, type=int,
+                    help='distributed training or not')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
 parser.add_argument('--weight_decay', '--wd', default=1e-4, type=float,
@@ -87,6 +90,7 @@ def main():
     log_helper.init_log('global', args.save_dir, logging.INFO)
     logger = logging.getLogger('global')
     cfg = load_config(args.config)
+    device = torch.device("cuda:0")
     train_dataset, val_dataset, train_loader, val_loader = build_data_loader(args.dataset, cfg)
     model = Voxelnet(cfg=cfg)
     logger.info(model)
@@ -100,7 +104,13 @@ def main():
         assert os.path.isfile(args.resume), '{} is not a valid file'.format(args.resume)
         model, optimizer, args.start_epoch, best_recall = load_helper.restore_from(model, optimizer, args.resume)
 
-    model.cuda()
+    #model.cuda()
+
+    if torch.cuda.device_count()>1 and args.dist:
+       print("Let's use", torch.cuda.device_count(), "GPUs!")
+       model = nn.parallel.DistributedDataParallel(model)
+    model.to(device)
+
 
     if args.evaluate:
         validate(val_dataset, val_loader, model, cfg)
@@ -175,6 +185,8 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
 def validate(dataset, dataloader, model, cfg, epoch=-1):
     # switch to evaluate mode
     logger = logging.getLogger('global')
+    # torch.cuda.set_device(0)
+    # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     model.eval()
 
     total_rc = 0
@@ -213,7 +225,8 @@ def validate(dataset, dataloader, model, cfg, epoch=-1):
         }
 
         t0=time.time()
-        outputs = model(x)['predict']
+        outputs = model(x)
+        outputs = outputs['predict']
         t2 =time.time()
         proposals = outputs[0].data.cpu().numpy()
 
