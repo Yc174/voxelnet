@@ -1,0 +1,129 @@
+-1
+ERROR: Couldn't read: 000004.txt of ground truth. Please write me an email!
+An error occured while processing your results.
+-1
+ERROR: Couldn't read: 000004.txt of ground truth. Please write me an email!
+An error occured while processing your results.
+-1
+ERROR: Couldn't read: 000004.txt of ground truth. Please write me an email!
+An error occured while processing your results.
+-1
+ERROR: Couldn't read: 000004.txt of ground truth. Please write me an email!
+An error occured while processing your results.
+-1
+ERROR: Couldn't read: 000004.txt of ground truth. Please write me an email!
+An error occured while processing your results.
+-1
+ERROR: Couldn't read: 000004.txt of ground truth. Please write me an email!
+An error occured while processing your results.
+-1
+ERROR: Couldn't read: 000004.txt of ground truth. Please write me an email!
+An error occured while processing your results.
+-1
+ERROR: Couldn't read: 000004.txt of ground truth. Please write me an email!
+An error occured while processing your results.
+-1
+  done.
+car_detection AP: 0.568182 9.090909 9.090909
+car_detection_BEV AP: 0.000000 4.545455 4.545455
+car_heading_BEV AP: 0.000000 4.536859 4.536859
+car_detection_3D AP: 0.000000 0.826446 0.826446
+car_heading_3D AP: 0.000000 0.826393 0.826393
+-1
+  done.
+car_detection AP: 0.568182 9.090909 9.090909
+car_detection_BEV AP: 0.000000 4.545455 4.545455
+car_heading_BEV AP: 0.000000 4.536859 4.536859
+car_detection_3D AP: 0.000000 0.826446 0.826446
+car_heading_3D AP: 0.000000 0.826393 0.826393
+-1
+  done.
+car_detection AP: 0.568182 9.090909 9.090909
+car_detection_BEV AP: 0.000000 4.545455 4.545455
+car_heading_BEV AP: 0.000000 4.536859 4.536859
+car_detection_3D AP: 0.000000 0.826446 0.826446
+car_heading_3D AP: 0.000000 0.826393 0.826393
+4
+  done.
+car_detection AP: 0.000000 0.000000 0.000000
+car_detection_BEV AP: 0.000000 0.000000 0.000000
+car_heading_BEV AP: 0.000000 0.000000 0.000000
+car_detection_3D AP: 0.000000 0.000000 0.000000
+car_heading_3D AP: 0.000000 0.000000 0.000000
+9
+  done.
+car_detection AP: 0.000000 0.000000 0.000000
+car_detection_BEV AP: 0.000000 0.000000 0.000000
+car_heading_BEV AP: 0.000000 0.000000 0.000000
+car_detection_3D AP: 0.000000 0.000000 0.000000
+car_heading_3D AP: 0.000000 0.000000 0.000000
+4
+9
+  done.
+car_detection AP: 10.411847 12.787843 16.305307
+car_detection_BEV AP: 7.044230 9.632082 11.120496
+car_heading_BEV AP: 6.931552 9.322651 10.666784
+car_detection_3D AP: 2.502169 3.007835 3.655228
+car_heading_3D AP: 2.480156 2.929553 3.471353
+  done.
+car_detection AP: 15.985116 20.949902 24.361925
+car_detection_BEV AP: 13.940006 18.003592 18.942570
+car_heading_BEV AP: 13.850186 17.698797 18.375107
+car_detection_3D AP: 11.686115 13.571274 14.304219
+car_heading_3D AP: 11.651306 13.442227 14.095410
+4
+9
+  done.
+car_detection AP: 18.996792 20.678682 23.059669
+car_detection_BEV AP: 15.731237 17.573496 18.170687
+car_heading_BEV AP: 15.533267 17.105871 17.557381
+car_detection_3D AP: 8.830709 9.075010 8.846003
+car_heading_3D AP: 8.737450 8.888284 8.630859
+14
+  done.
+car_detection AP: 21.035952 21.947123 23.954302
+car_detection_BEV AP: 18.861223 19.737906 19.872770
+car_heading_BEV AP: 18.631691 19.319292 19.378088
+car_detection_3D AP: 12.717265 12.048434 12.729308
+car_heading_3D AP: 12.512568 11.714721 12.360703
+  done.
+car_detection AP: 20.544567 23.795956 27.364944
+car_detection_BEV AP: 16.528244 20.773949 21.636572
+car_heading_BEV AP: 16.280235 20.061922 20.810131
+car_detection_3D AP: 12.124207 13.930674 14.577940
+car_heading_3D AP: 11.915253 13.546966 14.124849
+19
+  done.
+car_detection AP: 19.630032 23.360218 26.668510
+car_detection_BEV AP: 18.284649 22.012966 24.139490
+car_heading_BEV AP: 18.106817 21.531025 23.568295
+car_detection_3D AP: 14.145321 16.020607 16.848118
+car_heading_3D AP: 14.003990 15.723890 16.503101
+24
+  done.
+car_detection AP: 18.231520 23.202147 27.178869
+car_detection_BEV AP: 16.250347 20.875469 22.907043
+car_heading_BEV AP: 16.079725 20.439472 22.344980
+car_detection_3D AP: 12.747780 15.510781 16.012897
+car_heading_3D AP: 12.665965 15.280313 15.767318
+29
+  done.
+car_detection AP: 25.159666 29.852518 31.785500
+car_detection_BEV AP: 22.810127 27.253077 28.100098
+car_heading_BEV AP: 22.466345 26.278881 27.099483
+car_detection_3D AP: 19.924711 21.339458 21.228661
+car_heading_3D AP: 19.655464 20.882711 20.785566
+34
+  done.
+car_detection AP: 26.009699 29.056517 30.536116
+car_detection_BEV AP: 24.403511 27.476349 28.209364
+car_heading_BEV AP: 24.000902 26.881323 27.554926
+car_detection_3D AP: 21.612286 21.913237 22.852110
+car_heading_3D AP: 21.254374 21.476477 22.423912
+39
+  done.
+car_detection AP: 27.673325 29.604116 32.441200
+car_detection_BEV AP: 25.570309 28.273314 29.071194
+car_heading_BEV AP: 25.186798 27.681927 28.415731
+car_detection_3D AP: 20.550394 23.720413 23.883886
+car_heading_3D AP: 20.267559 23.276020 23.455236

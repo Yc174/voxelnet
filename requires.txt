@@ -1,0 +1,6 @@
+pip install opencv-python
+pip install torch torchvision
+sudo apt-get install gnuplot gnuplot5
+
+
+
