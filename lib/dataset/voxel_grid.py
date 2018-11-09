@@ -113,13 +113,27 @@ class VoxelGrid(object):
         self.voxel_indices = (voxel_coords - self.min_voxel_coord).astype(int)
 
         if create_leaf_layout:
-            padded_voxel_points = np.zeros([unique_indices.shape[0], num_T, pts.shape[1]], dtype=np.float32)
+            # padded_voxel_points = np.zeros([unique_indices.shape[0], num_T, pts.shape[1]], dtype=np.float32)
+            # for i, v in enumerate(zip(unique_indices, num_points_in_voxel)):
+            #     if v[1]<num_T:
+            #         padded_voxel_points[i,:v[1],:] = self.points[v[0]:v[0]+v[1], :]
+            #     else:
+            #         inds = np.random.choice(v[1], num_T)
+            #         padded_voxel_points[i, :, :] = self.points[v[0]+inds, :]
+
+            padded_voxel_points = np.zeros([unique_indices.shape[0], num_T, pts.shape[1]+3], dtype=np.float32)
             for i, v in enumerate(zip(unique_indices, num_points_in_voxel)):
                 if v[1]<num_T:
-                    padded_voxel_points[i,:v[1],:] = self.points[v[0]:v[0]+v[1], :]
+                    padded_voxel_points[i,:v[1],:4] = self.points[v[0]:v[0]+v[1], :]
+                    middle_points = np.mean(self.points[v[0]:v[0] + v[1], :3], axis=0)
+                    padded_voxel_points[i, :v[1], 4:] = padded_voxel_points[i, :v[1], :3] - middle_points
                 else:
                     inds = np.random.choice(v[1], num_T)
-                    padded_voxel_points[i, :, :] = self.points[v[0]+inds, :]
+                    padded_voxel_points[i, :, :4] = self.points[v[0]+inds, :]
+                    middle_points = np.mean(self.points[v[0]+inds, :3], axis=0)
+                    padded_voxel_points[i, :v[1], 4:] = padded_voxel_points[i, :v[1], :3] - middle_points
+
+
             self.padded_voxel_points = padded_voxel_points
             # Create Voxel Object with -1 as empty/occluded
             self.leaf_layout = self.VOXEL_EMPTY * \

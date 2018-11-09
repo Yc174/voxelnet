@@ -57,7 +57,7 @@ class Conv_Middle_layers(nn.Module):
 class feature_learning_network(nn.Module):
     def __init__(self):
         super(feature_learning_network, self).__init__()
-        self.vfe1 = VFE(4, 32)
+        self.vfe1 = VFE(7, 32)
         self.fcn1 = FCN(32, 256)
 
     def forward(self, x):
