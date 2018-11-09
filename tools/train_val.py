@@ -255,14 +255,16 @@ def validate(dataset, dataloader, model, cfg, epoch=-1):
                 print(' -------- LiDAR points and 3D boxes in velodyne coordinate --------')
                 show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), gts_per_points_cloud, calib, color=(1,1,1))
                 input()
-                print('proposals shape:', rois_per_points_cloud.shape)
 
-                show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), rois_per_points_cloud[:10, 1:1+7], calib,
+                score_filter = rois_per_points_cloud[:, -1]>score_threshold
+                print('img: {}, proposals shape:{}'.format(img_ids[b_ix], rois_per_points_cloud[score_filter].shape))
+
+                show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), rois_per_points_cloud[score_filter, 1:1+7], calib,
                                             color=(1, 1, 1))
                 input()
                 # anchors = outputs[1]
                 # total_anchors, _ = anchors.shape
-                # idx = np.random.choice(total_anchors, 100)
+                # idx = np.random.choice(total_anchors, 200)
                 # show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), anchors[idx, :], calib,
                 #                             color=(1, 1, 1))
                 # input()
