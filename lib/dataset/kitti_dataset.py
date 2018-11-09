@@ -26,8 +26,8 @@ class KittiDataset(Dataset):
             # idx_filename = 'generated_Car_train.txt'
             split = 'training'
         elif split == 'val':
-            idx_filename = 'val.txt'
-            # idx_filename = 'generated_Car_val.txt'
+            # idx_filename = 'val.txt'
+            idx_filename = 'generated_Car_val.txt'
             split = 'training' # rename
         elif split == 'test':
             idx_filename = 'test.txt'

@@ -1,4 +1,5 @@
 experiments/predictions/
+*.txt
 *.eps
 *.gp
 *.png
