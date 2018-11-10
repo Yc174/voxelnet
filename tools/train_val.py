@@ -162,6 +162,8 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
             'gt_bboxes_3d': _input[9],
             'num_divisions': _input[11]
         }
+        if x['gt_bboxes_3d'].cpu().numpy().shape[0] == 0:
+            continue
         t1 = time.time()
         outputs = model(x)
         rpn_cls_loss = outputs['losses'][0]
@@ -234,42 +236,43 @@ def validate(dataset, dataloader, model, cfg, epoch=-1):
             gt_boxes = gt_boxes.cpu().numpy()
 
         for b_ix in range(batch_size):
-
             rois_per_points_cloud = proposals[proposals[:, 0] == b_ix]
-            gts_per_points_cloud = gt_boxes[b_ix]
-            rois_per_points_cloud_anchor = box_3d_encoder.box_3d_to_anchor(rois_per_points_cloud[:, 1:1 + 7])
-            gts_per_points_cloud_anchor = box_3d_encoder.box_3d_to_anchor(gts_per_points_cloud)
-            rois_per_points_cloud_bev, _ = anchor_projector.project_to_bev(rois_per_points_cloud_anchor, bev_extents)
-            gts_per_points_cloud_bev, _ = anchor_projector.project_to_bev(gts_per_points_cloud_anchor, bev_extents)
+            if gt_boxes.shape[0] != 0:
+                gts_per_points_cloud = gt_boxes[b_ix]
 
-            # rpn recall
-            num_rc, num_gt = bbox_helper.compute_recall(rois_per_points_cloud_bev, gts_per_points_cloud_bev)
-            total_gt += num_gt
-            total_rc += num_rc
+                rois_per_points_cloud_anchor = box_3d_encoder.box_3d_to_anchor(rois_per_points_cloud[:, 1:1 + 7])
+                gts_per_points_cloud_anchor = box_3d_encoder.box_3d_to_anchor(gts_per_points_cloud)
+                rois_per_points_cloud_bev, _ = anchor_projector.project_to_bev(rois_per_points_cloud_anchor, bev_extents)
+                gts_per_points_cloud_bev, _ = anchor_projector.project_to_bev(gts_per_points_cloud_anchor, bev_extents)
 
-            if args.visual:
-                calib_dir = os.path.join(args.datadir, 'training/calib', '%06d.txt'%(img_ids[b_ix]))
-                calib = Calibration(calib_dir)
+                # rpn recall
+                num_rc, num_gt = bbox_helper.compute_recall(rois_per_points_cloud_bev, gts_per_points_cloud_bev)
+                total_gt += num_gt
+                total_rc += num_rc
 
-                # Show all LiDAR points. Draw 3d box in LiDAR point cloud
-                print(' -------- LiDAR points and 3D boxes in velodyne coordinate --------')
-                show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), gts_per_points_cloud, calib, color=(1,1,1))
-                input()
+                if args.visual:
+                    calib_dir = os.path.join(args.datadir, 'training/calib', '%06d.txt'%(img_ids[b_ix]))
+                    calib = Calibration(calib_dir)
 
-                score_filter = rois_per_points_cloud[:, -1]>score_threshold
-                print('img: {}, proposals shape:{}'.format(img_ids[b_ix], rois_per_points_cloud[score_filter].shape))
+                    # Show all LiDAR points. Draw 3d box in LiDAR point cloud
+                    print(' -------- LiDAR points and 3D boxes in velodyne coordinate --------')
+                    show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), gts_per_points_cloud, calib, color=(1,1,1))
+                    input()
 
-                show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), rois_per_points_cloud[score_filter, 1:1+7], calib,
-                                            color=(1, 1, 1))
-                input()
-                # anchors = outputs[1]
-                # total_anchors, _ = anchors.shape
-                # idx = np.random.choice(total_anchors, 200)
-                # show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), anchors[idx, :], calib,
-                #                             color=(1, 1, 1))
-                # input()
+                    score_filter = rois_per_points_cloud[:, -1]>score_threshold
+                    print('img: {}, proposals shape:{}'.format(img_ids[b_ix], rois_per_points_cloud[score_filter].shape))
 
-            valid, total_samples= evaluator_utils.save_predictions_in_kitti_format(dataset, rois_per_points_cloud[:,1:], img_ids[b_ix], predictions_3d_dir, score_threshold)
+                    show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), rois_per_points_cloud[score_filter, 1:1+7][:10], calib,
+                                                color=(1, 1, 1))
+                    input()
+                    # anchors = outputs[1]
+                    # total_anchors, _ = anchors.shape
+                    # idx = np.random.choice(total_anchors, 200)
+                    # show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), anchors[idx, :], calib,
+                    #                             color=(1, 1, 1))
+                    # input()
+
+            valid, total_samples = evaluator_utils.save_predictions_in_kitti_format(dataset, rois_per_points_cloud[:,1:], img_ids[b_ix], predictions_3d_dir, score_threshold)
             valid_samples += valid
             logger.info('valid samples: %d/%d'%(valid_samples, total_samples))
         logger.info('Test valid instance: [%d/%d] Time: %.3f %d/%d' % (iter, len(dataloader), t2 - t0, total_rc, total_gt))

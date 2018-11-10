@@ -89,57 +89,6 @@ def project_to_image_space(anchor, P, image_shape):
     #     raise ValueError("Invalid shape for anchors {}, should be "
     #                      "(N, 6)".format(anchors.shape[1]))
     #
-    # # Figure out box mins and maxes
-    # x = (anchors[:, 0])
-    # y = (anchors[:, 1])
-    # z = (anchors[:, 2])
-    #
-    # dim_x = (anchors[:, 3])
-    # dim_y = (anchors[:, 4])
-    # dim_z = (anchors[:, 5])
-    #
-    # dim_x_half = dim_x / 2.
-    # dim_z_half = dim_z / 2.
-    #
-    # # Calculate 3D BB corners
-    # x_corners = np.array([x + dim_x_half,
-    #                       x + dim_x_half,
-    #                       x - dim_x_half,
-    #                       x - dim_x_half,
-    #                       x + dim_x_half,
-    #                       x + dim_x_half,
-    #                       x - dim_x_half,
-    #                       x - dim_x_half]).T.reshape(1, -1)
-    #
-    # y_corners = np.array([y,
-    #                       y,
-    #                       y,
-    #                       y,
-    #                       y - dim_y,
-    #                       y - dim_y,
-    #                       y - dim_y,
-    #                       y - dim_y]).T.reshape(1, -1)
-    #
-    # z_corners = np.array([z + dim_z_half,
-    #                       z - dim_z_half,
-    #                       z - dim_z_half,
-    #                       z + dim_z_half,
-    #                       z + dim_z_half,
-    #                       z - dim_z_half,
-    #                       z - dim_z_half,
-    #                       z + dim_z_half]).T.reshape(1, -1)
-    #
-    # anchor_corners = np.vstack([x_corners, y_corners, z_corners])
-    #
-    # # Apply the 2D image plane transformation
-    # pts_2d = calib_utils.project_to_image(anchor_corners, stereo_calib_p2)
-
-    # Get the min and maxes of image coordinates
-    # i_axis_min_points = np.amin(pts_2d[0, :].reshape(-1, 8), axis=1)
-    # j_axis_min_points = np.amin(pts_2d[1, :].reshape(-1, 8), axis=1)
-    #
-    # i_axis_max_points = np.amax(pts_2d[0, :].reshape(-1, 8), axis=1)
-    # j_axis_max_points = np.amax(pts_2d[1, :].reshape(-1, 8), axis=1)
 
     pts_2d, pts_3d = compute_numpy_boxes_3d(anchor, P)
 
