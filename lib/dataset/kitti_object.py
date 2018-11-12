@@ -167,7 +167,7 @@ def get_lidar_in_image_fov(pc_velo, calib, xmin, ymin, xmax, ymax,
     else:
         return imgfov_pc_velo
 
-def get_lidar_in_area_extent(pc_velo, calib, area_extent):
+def old_get_lidar_in_area_extent(pc_velo, calib, area_extent):
     ''' Filter lidar points, keep those in area_extent '''
     pts = calib.project_velo_to_rect(pc_velo)
     if area_extent is not None:
@@ -180,6 +180,19 @@ def get_lidar_in_area_extent(pc_velo, calib, area_extent):
                       (pts[:,2] >= extents_transpose[0, 2]) & (pts[:,2]<extents_transpose[1, 2])
 
         return pts[extent_inds], extent_inds
+
+def get_lidar_in_area_extent(pc_rect, area_extent):
+    ''' Filter lidar points in camera's coordinate, keep those in area_extent '''
+    if area_extent is not None:
+        # Check provided extents
+        extents_transpose = np.array(area_extent).transpose()
+        if extents_transpose.shape != (2, 3):
+            raise ValueError("Extents are the wrong shape {}".format(area_extent.shape))
+        extent_inds = (pc_rect[:,0] >= extents_transpose[0, 0]) & (pc_rect[:,0]<extents_transpose[1, 0]) & \
+                      (pc_rect[:,1] >= extents_transpose[0, 1]) & (pc_rect[:,1]<extents_transpose[1, 1]) & \
+                      (pc_rect[:,2] >= extents_transpose[0, 2]) & (pc_rect[:,2]<extents_transpose[1, 2])
+
+        return pc_rect[extent_inds], extent_inds
 
 def get_lidar_in_img_fov_and_area_extent(pc_velo, calib, xmin, ymin, xmax, ymax,
                                         area_extent, clip_distance=2.0):

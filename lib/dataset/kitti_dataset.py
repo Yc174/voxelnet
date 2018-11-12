@@ -10,6 +10,7 @@ logger =logging.getLogger('global')
 from lib.dataset.kitti_object import kitti_object, get_lidar_in_image_fov, get_lidar_in_area_extent, get_lidar_in_img_fov_and_area_extent
 import lib.dataset.kitti_util as utils
 from lib.dataset.voxel_grid import VoxelGrid
+from lib.dataset.data_augmentation import augmentation_boxes, augmentation_rotation_all, augmentation_scale_all, get_boxes_in_area_extent
 
 class KittiDataset(Dataset):
     def __init__(self, root_dir, cfg, split='train'):
@@ -72,10 +73,19 @@ class KittiDataset(Dataset):
         t2 = time.time()
 
         img_height, img_width, img_channel = img.shape
-        valid_pc_rect, inds = get_lidar_in_img_fov_and_area_extent(pc_velo[:, :3],
+        pc_rect, inds = get_lidar_in_img_fov_and_area_extent(pc_velo[:, :3],
                                                     calib, 0, 0, img_width, img_height, self.area_extents)
-        valid_pc_rect = np.hstack([valid_pc_rect, pc_velo[inds, -1, np.newaxis]])
+        valid_pc_rect = np.hstack([pc_rect, pc_velo[inds, -1, np.newaxis]])
         # valid_pc_velo = pc_velo[inds]
+
+        if self.split == 'train':
+            # data augmentation
+            valid_pc_rect, bboxes_3d, seed_scale = augmentation_scale_all(valid_pc_rect, bboxes_3d)
+            valid_pc_rect, bboxes_3d, seed_rotation = augmentation_rotation_all(valid_pc_rect, bboxes_3d)
+            valid_pc_rect, inds = get_lidar_in_area_extent(valid_pc_rect, self.area_extents)
+            bboxes_3d = get_boxes_in_area_extent(bboxes_3d, self.area_extents)
+            print("scale: {}, rotation: {}, points num: {}, boxes num: {}".format(seed_scale, seed_rotation, valid_pc_rect.shape[0], bboxes_3d.shape[0]))
+
         t3 = time.time()
         voxel_grid = VoxelGrid()
         voxel_grid.voxelize(valid_pc_rect, voxel_size=self.voxel_size, extents=self.area_extents, create_leaf_layout=True, num_T=self.num_T)
@@ -97,20 +107,6 @@ class KittiDataset(Dataset):
                 img_id,
                 voxel_grid.num_divisions
                 ]
-        # return [img.unsqueeze(0),
-        #         bboxes_2d,
-        #         bboxes_3d,
-        #         [img_height, img_width],
-        #         voxel_grid.points,
-        #         voxel_grid.unique_indices,
-        #         voxel_grid.num_pts_in_voxel,
-        #         voxel_grid.leaf_layout,
-        #         voxel_grid.voxel_indices,
-        #         voxel_grid.padded_voxel_points,
-        #         ground_plane,
-        #         img_id,
-        #         voxel_grid.num_divisions
-        #         ]
 
 class KittiDataloader(DataLoader):
     def __init__(self, dataset, batch_size=1, shuffle=False, sampler=None, batch_sampler=None,
@@ -199,7 +195,10 @@ class KittiDataloader(DataLoader):
 
         # padded_images = torch.cat(padded_images, dim = 0)
         padded_gt_bboxes_2d = torch.from_numpy(np.stack(padded_gt_bboxes_2d, axis = 0))
-        padded_gt_bboxes_3d = torch.from_numpy(np.stack(padded_gt_bboxes_3d, axis = 0))
+        if max_num_gt_bboxes_3d == 0:
+            padded_gt_bboxes_3d = torch.from_numpy(np.zeros([0, 7]))
+        else:
+            padded_gt_bboxes_3d = torch.from_numpy(np.stack(padded_gt_bboxes_3d, axis = 0))
         padded_points = torch.from_numpy(np.stack(padded_points, axis= 0))
         padded_indices = torch.from_numpy(np.stack(padded_indices, axis= 0))
         padded_num_pts = torch.from_numpy(np.stack(padded_num_pts, axis= 0))
