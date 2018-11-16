@@ -9,11 +9,13 @@ import os
 import sys
 import numpy as np
 import cv2
+import time
 from PIL import Image
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.join(BASE_DIR, '../..')
-sys.path.append(os.path.join(ROOT_DIR, 'lib', 'mayavi'))
+from _sys_init import root_dir
+sys.path.append(os.path.join(root_dir(), 'lib', 'mayavi'))
 import lib.dataset.kitti_util as utils
+from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
+
 
 try:
     raw_input          # Python 2
@@ -224,7 +226,7 @@ def show_lidar_with_boxes(pc_velo, objects, calib,
     ''' Show all LiDAR points.
         Draw 3d box in LiDAR point cloud (in velo coord system) '''
     if 'mlab' not in sys.modules: import mayavi.mlab as mlab
-    from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
+    # from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
 
     print(('All point num: ', pc_velo.shape[0]))
     fig = mlab.figure(figure=None, bgcolor=(0,0,0),
@@ -250,18 +252,17 @@ def show_lidar_with_boxes(pc_velo, objects, calib,
             tube_radius=None, line_width=1, figure=fig)
     mlab.show(1)
 
-def show_lidar_with_numpy_boxes(pc_rect, objects, calib,
+def show_lidar_with_numpy_boxes(pc_rect, objects, calib, save_figure, save_figure_dir='', img_name='',
                           img_fov=False, img_width=None, img_height=None, color=(1,1,1)):
     ''' Show all LiDAR points.
         Draw 3d box in LiDAR point cloud (in velo coord system) '''
     if 'mlab' not in sys.modules: import mayavi.mlab as mlab
-    from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
 
     pc_velo = calib.project_rect_to_velo(pc_rect)
 
     print(('All point num: ', pc_velo.shape[0]))
-    fig = mlab.figure(figure=None, bgcolor=(0,0,0),
-        fgcolor=None, engine=None, size=(1000, 500))
+    fig = mlab.figure(figure=None, bgcolor=(0.5,0.5,0.5),
+        fgcolor=None, engine=None, size=(1600, 1000))
     if img_fov:
         pc_velo = get_lidar_in_image_fov(pc_velo, calib, 0, 0,
             img_width, img_height)
@@ -279,7 +280,20 @@ def show_lidar_with_numpy_boxes(pc_rect, objects, calib,
         draw_gt_boxes3d([box3d_pts_3d_velo], fig=fig, color=color, draw_text=False)
         mlab.plot3d([x1, x2], [y1, y2], [z1, z2], color=(0.5, 0.5, 0.5),
                     tube_radius=None, line_width=1, figure=fig)
-    mlab.show(1)
+    # mlab.show(1)
+    # mlab.view(azimuth=180, elevation=70, focalpoint=[12.0909996, -1.04700089, -2.03249991], distance='auto', figure=fig)
+    mlab.view(azimuth=180, elevation=60, focalpoint=[12.0909996, -1.04700089, 5.03249991], distance=62.0, figure=fig)
+    if save_figure:
+        if save_figure_dir != '':
+            save_figure_dir = os.path.join(root_dir(), save_figure_dir)
+            print(save_figure_dir)
+        if not os.path.exists(save_figure_dir):
+            os.makedirs(save_figure_dir)
+            print("done!!!!")
+        filename = os.path.join(save_figure_dir, img_name)
+        mlab.savefig(filename)
+    time.sleep(0.03)
+
 
 def show_lidar_on_image(pc_velo, img, calib, img_width, img_height):
     ''' Project LiDAR points to image '''
@@ -324,5 +338,5 @@ def dataset_viz():
 
 if __name__=='__main__':
     import mayavi.mlab as mlab
-    from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
+    # from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
     dataset_viz()
