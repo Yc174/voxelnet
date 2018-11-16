@@ -43,6 +43,10 @@ parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
 parser.add_argument('-v', '--visual', dest='visual', action='store_true',
                     help='visualization detections on point-cloud')
+parser.add_argument('-s', '--save_as_figure', dest='save_as_figure', action='store_true',
+                    help='whether to save the visualization detections on point-cloud')
+parser.add_argument('--figdir', dest='figdir', default='save_figure',
+                    help='directory to save results')
 parser.add_argument('--step_epochs', dest='step_epochs', type=lambda x: list(map(int, x.split(','))),
                     default='-1', help='epochs to decay lr')
 parser.add_argument('--epochs', default=15, type=int, metavar='N',
@@ -255,14 +259,16 @@ def validate(dataset, dataloader, model, cfg, epoch=-1):
                     calib = Calibration(calib_dir)
 
                     # Show all LiDAR points. Draw 3d box in LiDAR point cloud
-                    print(' -------- LiDAR points and 3D boxes in velodyne coordinate --------')
-                    show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), gts_per_points_cloud, calib, color=(1,1,1))
-                    input()
+                    # print(' -------- LiDAR points and 3D boxes in velodyne coordinate --------')
+                    # show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), gts_per_points_cloud, calib, color=(1,1,1))
+                    # input()
 
                     score_filter = rois_per_points_cloud[:, -1]>score_threshold
                     print('img: {}, proposals shape:{}'.format(img_ids[b_ix], rois_per_points_cloud[score_filter].shape))
 
-                    show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), rois_per_points_cloud[score_filter, 1:1+7][:10], calib,
+                    show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), rois_per_points_cloud[score_filter, 1:1+7][:10],
+                                                calib, save_figure=args.save_as_figure, save_figure_dir=args.figdir,
+                                                img_name='%06d.jpg'%(img_ids[b_ix]),
                                                 color=(1, 1, 1))
                     input()
                     # anchors = outputs[1]

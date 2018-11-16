@@ -13,4 +13,6 @@ CUDA_VISIBLE_DEVICES=${GPU_ID} python tools/train_val.py --config=experiments/co
     --save_dir=experiments/save \
     --resume=experiments/save/checkpoint_e40.pth \
     -e \
-    #-v
+    -v \
+    -s \
+    --figdir=experiments/show
