@@ -79,10 +79,14 @@ def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bb
             gt_boxes_for_3d_iou = box_3d_encoder.box_3d_to_3d_iou_format(ground_truth_bboxes)
             overlaps = []
             for gt_box in gt_boxes_for_3d_iou:
-                iou = evaluation.three_d_iou(gt_box, anchors_for_3d_iou)
+                if np.any(gt_box > 0):
+                    iou = evaluation.three_d_iou(gt_box, anchors_for_3d_iou)
+                else:
+                    iou = np.zeros(anchors_overplane.shape[0])
                 overlaps.append(iou)
             overlaps = np.stack(overlaps, axis=0).transpose()
             overlaps = overlaps.reshape(B, -1, G)
+            print("overlaps shape:", overlaps.shape)
 
 
         else:
@@ -120,6 +124,7 @@ def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bb
     num_pos_sampling = int(cfg['positive_percent'] * cfg['rpn_batch_size'] * batch_size)
     pos_b_ix, pos_ka_ix = np.where(labels > 0)
     num_positives = len(pos_b_ix)
+    print("positive :", num_positives)
     if num_positives > num_pos_sampling:
         remove_ix = np.random.choice(num_positives, size = num_positives - num_pos_sampling, replace = False)
         labels[pos_b_ix[remove_ix], pos_ka_ix[remove_ix]] = -1

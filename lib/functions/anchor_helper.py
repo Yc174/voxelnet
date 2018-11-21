@@ -48,7 +48,9 @@ def get_anchors_over_plane(featmap_h, featmap_w, area_extents, anchor_3d_sizes, 
     K = shifts.shape[0]
     anchors_overplane = (anchors.reshape((1, A, 7)) +
                     _shifts.reshape((1, K, 7)).transpose((1, 0, 2)))
-    return anchors_overplane.reshape((K * A, 7))
+    anchors_overplane = anchors_overplane.reshape((K * A, 7))
+    anchors_overplane[:, 1] = anchors_overplane[:, 1] + anchors_overplane[:, -2]
+    return anchors_overplane
 
 def get_anchors(anchor_3d_sizes, anchor_rotations):
     #
