@@ -56,7 +56,8 @@ class kitti_object(object):
         img_filename = os.path.join(self.image_dir, '%06d.png'%(idx))
         return utils.load_image(img_filename)
 
-    def get_lidar(self, idx): 
+    def get_lidar(self, idx):
+        # this is for KITTI/object/...
         assert(idx<self.num_samples) 
         lidar_filename = os.path.join(self.lidar_dir, '%06d.bin'%(idx))
         return utils.load_velo_scan(lidar_filename)
@@ -142,19 +143,37 @@ def viz_kitti_video():
         raw_input()
     return
 
-def show_image_with_boxes(img, objects, calib, show3d=True):
+def show_image_with_boxes(img, objects, calib, show3d=True, save_figure=False, save_figure_dir='',
+                          img_name=''):
     ''' Show image with 2D bounding boxes '''
     img1 = np.copy(img) # for 2d bbox
-    img2 = np.copy(img) # for 3d bbox
+    img2 = img.copy() # for 3d bbox
     for obj in objects:
-        if obj.type=='DontCare':continue
-        cv2.rectangle(img1, (int(obj.xmin),int(obj.ymin)),
-            (int(obj.xmax),int(obj.ymax)), (0,255,0), 2)
-        box3d_pts_2d, box3d_pts_3d = utils.compute_box_3d(obj, calib.P)
-        img2 = utils.draw_projected_box3d(img2, box3d_pts_2d)
-    Image.fromarray(img1).show()
+        if isinstance(obj, np.ndarray):
+            box3d_pts_2d, box3d_pts_3d = utils.compute_numpy_boxes_3d(obj, calib.P)
+        else:
+            if obj.type=='DontCare':continue
+            cv2.rectangle(img1, (int(obj.xmin),int(obj.ymin)),
+                (int(obj.xmax),int(obj.ymax)), (0,255,0), 2)
+            box3d_pts_2d, box3d_pts_3d = utils.compute_box_3d(obj, calib.P)
+        if box3d_pts_2d is not None:
+            height, width, _ = img.shape
+            # box3d_pts_2d[:, 0] = np.clip(box3d_pts_2d[:, 0], 0, height-1)
+            # box3d_pts_2d[:, 1] = np.clip(box3d_pts_2d[:, 1], 0, width-1)
+            img2 = utils.draw_projected_box3d(img2, box3d_pts_2d)
+    if not isinstance(objects, np.ndarray):
+        Image.fromarray(img1).show()
     if show3d:
         Image.fromarray(img2).show()
+        if save_figure:
+            if save_figure_dir != '':
+                save_figure_dir = os.path.join(root_dir(), save_figure_dir)
+                print(save_figure_dir)
+            if not os.path.exists(save_figure_dir):
+                os.makedirs(save_figure_dir)
+                print("done!!!!")
+            filename = os.path.join(save_figure_dir, img_name)
+            cv2.imwrite(filename, img2)
 
 def get_lidar_in_image_fov(pc_velo, calib, xmin, ymin, xmax, ymax,
                            return_more=False, clip_distance=2.0):
@@ -280,7 +299,7 @@ def show_lidar_with_numpy_boxes(pc_rect, objects, calib, save_figure, save_figur
         x1, y1, z1 = ori3d_pts_3d_velo[0, :]
         x2, y2, z2 = ori3d_pts_3d_velo[1, :]
         draw_gt_boxes3d([box3d_pts_3d_velo], fig=fig, color=color, draw_text=False)
-        mlab.plot3d([x1, x2], [y1, y2], [z1, z2], color=(0.5, 0.5, 0.5),
+        mlab.plot3d([x1, x2], [y1, y2], [z1, z2], color=(0.8, 0.8, 0.8),
                     tube_radius=None, line_width=1, figure=fig)
     # mlab.show(1)
     # mlab.view(azimuth=180, elevation=70, focalpoint=[12.0909996, -1.04700089, -2.03249991], distance='auto', figure=fig)
@@ -295,6 +314,7 @@ def show_lidar_with_numpy_boxes(pc_rect, objects, calib, save_figure, save_figur
         filename = os.path.join(save_figure_dir, img_name)
         mlab.savefig(filename)
     time.sleep(0.03)
+    mlab.close()
 
 
 def show_lidar_on_image(pc_velo, img, calib, img_width, img_height):

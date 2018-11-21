@@ -11,8 +11,8 @@ CUDA_VISIBLE_DEVICES=${GPU_ID} python tools/train_val.py --config=experiments/co
     --dataset=kitti \
     --datadir=datasets/KITTI/object/ \
     --save_dir=experiments/save \
-    --resume=experiments/save/checkpoint_e40.pth \
+    --resume=experiments/save/checkpoint_e160.pth \
     -e \
     -v \
     -s \
-    --figdir=experiments/show
+    --figdir=experiments/save/pictures
