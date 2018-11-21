@@ -23,11 +23,11 @@ class KittiDataset(Dataset):
         self.split = split
         idx_filename = ''
         if split == 'train':
-            idx_filename = 'train.txt'
-            # idx_filename = 'generated_Car_train.txt'
+            #idx_filename = 'train.txt'
+            idx_filename = 'generated_Car_train.txt'
             split = 'training'
         elif split == 'val':
-            # idx_filename = 'val.txt'
+            #idx_filename = 'val.txt'
             idx_filename = 'generated_Car_val.txt'
             split = 'training' # rename
         elif split == 'test':

@@ -14,7 +14,7 @@ from PIL import Image
 from _sys_init import root_dir
 sys.path.append(os.path.join(root_dir(), 'lib', 'mayavi'))
 import lib.dataset.kitti_util as utils
-from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
+#from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
 
 
 try:
@@ -257,6 +257,8 @@ def show_lidar_with_numpy_boxes(pc_rect, objects, calib, save_figure, save_figur
     ''' Show all LiDAR points.
         Draw 3d box in LiDAR point cloud (in velo coord system) '''
     if 'mlab' not in sys.modules: import mayavi.mlab as mlab
+    from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
+
 
     pc_velo = calib.project_rect_to_velo(pc_rect)
 
