@@ -2,6 +2,7 @@
 from lib.functions import bbox_helper
 from lib.functions import box_3d_encoder
 from lib.functions import anchor_projector
+from lib.functions import evaluation
 import numpy as np
 import torch
 from torch.autograd import Variable
@@ -12,7 +13,7 @@ def to_np_array(x):
     if isinstance(x, Variable): x = x.data
     return x.cpu().numpy() if torch.is_tensor(x) else x
 
-def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bboxes, image_info, ignore_regions = None, rpn_iou_type = '2d'):
+def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bboxes, image_info, ignore_regions = None):
     r'''
     :argument
         cfg.keys(): {
@@ -48,10 +49,12 @@ def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bb
     #logger.info("the number of gts is {}".format(G))
     labels = np.zeros([B, K*A], dtype=np.int64)
     if G != 0:
-        anchors = box_3d_encoder.box_3d_to_anchor(anchors_overplane)
-        ground_truth_bboxes = ground_truth_bboxes.reshape(B*G, -1)
-        gt_anchors = box_3d_encoder.box_3d_to_anchor(ground_truth_bboxes, ortho_rotate=True)
+        rpn_iou_type = cfg['rpn_iou_type']
         if rpn_iou_type == '2d':
+            anchors = box_3d_encoder.box_3d_to_anchor(anchors_overplane)
+            ground_truth_bboxes = ground_truth_bboxes.reshape(B * G, -1)
+            gt_anchors = box_3d_encoder.box_3d_to_anchor(ground_truth_bboxes, ortho_rotate=True)
+
             # Convert anchors to 2d iou format
             anchors_for_2d_iou, _ = np.asarray(anchor_projector.project_to_bev(
                 anchors, bev_extents))
@@ -68,12 +71,20 @@ def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bb
             logger.debug('overlaps shape:{}'.format(overlaps.shape))
 
         elif rpn_iou_type == '3d':
+            ground_truth_bboxes = ground_truth_bboxes.reshape(B*G, -1)
             # Convert anchors to 3d iou format for calculation
             anchors_for_3d_iou = box_3d_encoder.box_3d_to_3d_iou_format(
                 anchors_overplane)
 
-            gt_boxes_for_3d_iou = \
-                box_3d_encoder.box_3d_to_3d_iou_format(ground_truth_bboxes)
+            gt_boxes_for_3d_iou = box_3d_encoder.box_3d_to_3d_iou_format(ground_truth_bboxes)
+            overlaps = []
+            for gt_box in gt_boxes_for_3d_iou:
+                iou = evaluation.three_d_iou(gt_box, anchors_for_3d_iou)
+                overlaps.append(iou)
+            overlaps = np.stack(overlaps, axis=0).transpose()
+            overlaps = overlaps.reshape(B, -1, G)
+
+
         else:
             raise ValueError('Invalid rpn_iou_type {}', rpn_iou_type)
 

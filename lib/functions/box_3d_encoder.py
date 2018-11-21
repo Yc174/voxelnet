@@ -62,7 +62,7 @@ def box_3d_to_3d_iou_format(boxes_3d):
         new_anchor_list: numpy array of 3d box format for iou
     """
     boxes_3d = np.asarray(boxes_3d)
-    fc.check_box_3d_format(boxes_3d)
+    # fc.check_box_3d_format(boxes_3d)
 
     iou_3d_boxes = np.zeros([len(boxes_3d), 7])
     iou_3d_boxes[:, 4:7] = boxes_3d[:, 0:3]
