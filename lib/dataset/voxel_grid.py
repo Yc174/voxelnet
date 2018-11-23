@@ -33,7 +33,7 @@ class VoxelGrid(object):
     def voxelize(self, pts, voxel_size, extents=None, create_leaf_layout=True, num_T=35):
         """
         The input for the voxelization is expected to be a PointCloud
-        with N points in 4 dimension (x,y,z, i). Voxel size is the quantization size
+        with N points in 4 dimension (x,y,z,i). Voxel size is the quantization size
         for the voxel grid.
 
         :param pts: Point cloud as N x [x, y, z, i]
@@ -42,6 +42,7 @@ class VoxelGrid(object):
                         Used for creating same sized voxel grids.
         :param create_leaf_layout: Set this to False to create an empty leaf_layout,
                                    which will save computation time.
+        :param num_T: Number of points voxel after sampling                           
         """
         # Check if points are 3D, otherwise early exit
         # if pts.shape[1] != 4 or pts.shape[1] != 3:

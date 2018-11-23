@@ -24,6 +24,13 @@ class model(nn.Module):
         pass
 
     def generate_anchors(self, feature_size, cfg, ground_plane=None):
+        """
+        generate anchors.
+        :param feature_size:  batch_size, num_anchors*7, featmap_h, featmap_w
+        :param cfg: include area_extents, anchor_3d_sizes, ground_plane, anchor_stride
+        :param ground_plane: Fixed or read from a file
+        :return: anchors, shape[A*K, 7],everyone is like [x,y,z,l,w,h,ry]
+        """
 
         batch_size, num_anchors_7, featmap_h, featmap_w = feature_size
         num_anchors = num_anchors_7 // 7

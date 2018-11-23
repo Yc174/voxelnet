@@ -77,15 +77,15 @@ def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bb
                 anchors_overplane)
 
             gt_boxes_for_3d_iou = box_3d_encoder.box_3d_to_3d_iou_format(ground_truth_bboxes)
-            overlaps = []
-            for gt_box in gt_boxes_for_3d_iou:
-                if np.any(gt_box > 0):
-                    iou = evaluation.three_d_iou(gt_box, anchors_for_3d_iou)
-                else:
-                    iou = np.zeros(anchors_overplane.shape[0])
-                overlaps.append(iou)
-            overlaps = np.stack(overlaps, axis=0).transpose()
-            overlaps = overlaps.reshape(B, -1, G)
+            overlaps = np.zeros((B, anchors_overplane.shape[0], G))
+            for b_ix in range(B):
+                for i, gt_box in enumerate(gt_boxes_for_3d_iou[b_ix*G:(b_ix+1)*G]):
+                    if np.any(gt_box > 0):
+                        iou = evaluation.three_d_iou(gt_box, anchors_for_3d_iou)
+                    else:
+                        iou = np.zeros(anchors_overplane.shape[0])
+                    overlaps[b_ix, :, i] = iou
+
             print("overlaps shape:", overlaps.shape)
 
 
