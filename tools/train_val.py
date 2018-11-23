@@ -85,7 +85,7 @@ def build_data_loader(dataset, cfg):
     train_loader = Dataloader(train_dataset, batch_size=args.batch_size, shuffle=True,
                               num_workers=args.workers, pin_memory=False)
     val_dataset = Dataset(args.datadir, cfg, split='val')
-    val_loader = Dataloader(val_dataset, batch_size=1, shuffle=False, num_workers=args.workers, pin_memory=False)
+    val_loader = Dataloader(val_dataset, batch_size=2, shuffle=False, num_workers=args.workers, pin_memory=False)
     logger.info('build dataloader done')
     return train_dataset, val_dataset,\
            train_loader, val_loader
@@ -108,12 +108,13 @@ def main():
         assert os.path.isfile(args.resume), '{} is not a valid file'.format(args.resume)
         model, optimizer, args.start_epoch, best_recall = load_helper.restore_from(model, optimizer, args.resume)
 
-    #model.cuda()
+    model.cuda()
 
-    if torch.cuda.device_count()>1 and args.dist:
-       print("Let's use", torch.cuda.device_count(), "GPUs!")
-       model = nn.parallel.DistributedDataParallel(model)
-    model.to(device)
+    #if torch.cuda.device_count()>1 and args.dist:
+    #   print("Let's use", torch.cuda.device_count(), "GPUs!")
+    #   #model = nn.parallel.DistributedDataParallel(model)
+    #   model = nn. DataParallel(model, device_ids=range(torch.cuda.device_count()))
+    #model.to(device)
 
 
     if args.evaluate:
@@ -147,7 +148,14 @@ def main():
 
 def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
     logger = logging.getLogger('global')
+    if torch.cuda.device_count()>1:
+       print("Let's use", torch.cuda.device_count(), "GPUs!")
+       #model = nn.parallel.DistributedDataParallel(model)
+       model = nn. DataParallel(model, device_ids=range(torch.cuda.device_count()))
+    #model.to(device)
+
     model.cuda()
+    
     model.train()
     t0 = time.time()
     for iter, _input in enumerate(dataloader):
@@ -179,19 +187,23 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
         t2 = time.time()
 
         optimizer.zero_grad()
-        loss.backward()
+        loss.backward(torch.ones_like(loss))
+        #loss.reduce().backward()
         optimizer.step()
 
         t3 = time.time()
+        print('loss shape:', loss.size(), loss[0].size())
+        print('rpn_accuracy:', rpn_accuracy.size())
         logger.info('Epoch: [%d][%d/%d] LR:%f ForwardTime: %.3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
-                    (epoch, iter, len(dataloader), lr, t2-t1, loss.cpu().data.numpy(), rpn_cls_loss.cpu().data.numpy(), rpn_loc_loss.cpu().data.numpy(), rpn_accuracy.cpu().data.numpy()))
+                    (epoch, iter, len(dataloader), lr, t2-t1, loss[0].cpu().data.numpy(), rpn_cls_loss[0].cpu().data.numpy(), rpn_loc_loss[0].cpu().data.numpy(), rpn_accuracy.cpu().data.numpy()))
         log_helper.print_speed((epoch - 1) * len(dataloader) + iter + 1, t3 - t0, args.epochs * len(dataloader))
         t0 = t3
 
 def validate(dataset, dataloader, model, cfg, epoch=-1):
     # switch to evaluate mode
     logger = logging.getLogger('global')
-    # torch.cuda.set_device(0)
+    torch.cuda.set_device(0)
+    model.cuda()
     # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     model.eval()
 
