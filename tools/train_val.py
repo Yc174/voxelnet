@@ -192,8 +192,8 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
         optimizer.step()
 
         t3 = time.time()
-        print('loss shape:', loss.size(), loss[0].size())
-        print('rpn_accuracy:', rpn_accuracy.size())
+        # print('loss shape:', loss.size(), loss[0].size())
+        # print('rpn_accuracy:', rpn_accuracy.size())
         logger.info('Epoch: [%d][%d/%d] LR:%f ForwardTime: %.3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
                     (epoch, iter, len(dataloader), lr, t2-t1, loss[0].cpu().data.numpy(), rpn_cls_loss[0].cpu().data.numpy(), rpn_loc_loss[0].cpu().data.numpy(), rpn_accuracy.cpu().data.numpy()))
         log_helper.print_speed((epoch - 1) * len(dataloader) + iter + 1, t3 - t0, args.epochs * len(dataloader))
@@ -290,7 +290,7 @@ def validate(dataset, dataloader, model, cfg, epoch=-1):
                                                 calib, save_figure=args.save_as_figure, save_figure_dir=args.figdir,
                                                 img_name='points_%06d.jpg'%(img_ids[b_ix]),
                                                 color=(1, 1, 1))
-                    # input()
+                    input()
                     # anchors = outputs[1]
                     # total_anchors, _ = anchors.shape
                     # idx = np.random.choice(total_anchors, 50)

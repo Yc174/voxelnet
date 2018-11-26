@@ -27,7 +27,7 @@
         "use_ohem": false
     },
     "train_anchor_target_cfg": {
-        "rpn_iou_type": "3d",
+        "rpn_iou_type": "2d",
         "rpn_batch_size": 256,
         "nms_iou_thresh": 0.7,
         "positive_iou_thresh": 0.6,

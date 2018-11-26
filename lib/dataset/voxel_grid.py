@@ -132,7 +132,7 @@ class VoxelGrid(object):
                     inds = np.random.choice(v[1], num_T)
                     padded_voxel_points[i, :, :4] = self.points[v[0]+inds, :]
                     middle_points = np.mean(self.points[v[0]+inds, :3], axis=0)
-                    padded_voxel_points[i, :v[1], 4:] = padded_voxel_points[i, :v[1], :3] - middle_points
+                    padded_voxel_points[i, :, 4:] = padded_voxel_points[i, :, :3] - middle_points
 
 
             self.padded_voxel_points = padded_voxel_points
