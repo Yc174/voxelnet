@@ -6,7 +6,7 @@ ROOT=.
 export PYTHONPATH=$ROOT:$PYTHONPATH
 export | grep PYTHONPATH
 
-GPU_ID=0
+GPU_ID=0,1
 CUDA_VISIBLE_DEVICES=${GPU_ID} python tools/train_val.py --config=experiments/config.json \
     --dataset=kitti \
     --datadir=datasets/KITTI/object/ \
@@ -14,5 +14,6 @@ CUDA_VISIBLE_DEVICES=${GPU_ID} python tools/train_val.py --config=experiments/co
     --epochs=40 \
     --step_epochs=30 \
     --lr=0.01 \
-    --batch_size=3 \
-    --workers=2
+    --batch_size=6 \
+    --workers=3 \
+    --dist=1

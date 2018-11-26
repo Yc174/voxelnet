@@ -133,14 +133,14 @@ class model(nn.Module):
                             rpn_pred_cls, rpn_pred_loc, anchors)
 
             # get rpn proposals
-            compute_rpn_proposals_fn = partial_fn['rpn_proposal_fn']
-            rpn_pred_cls = rpn_pred_cls.permute(0, 2, 3, 1).contiguous()
-            rpn_pred_cls = F.softmax(rpn_pred_cls.view(-1, 2), dim=1).view_as(rpn_pred_cls)
-            rpn_pred_cls = rpn_pred_cls.permute(0, 3, 1, 2)
-            proposals = compute_rpn_proposals_fn(rpn_pred_cls.data, rpn_pred_loc.data, anchors)
+            #compute_rpn_proposals_fn = partial_fn['rpn_proposal_fn']
+            #rpn_pred_cls = rpn_pred_cls.permute(0, 2, 3, 1).contiguous()
+            #rpn_pred_cls = F.softmax(rpn_pred_cls.view(-1, 2), dim=1).view_as(rpn_pred_cls)
+            #rpn_pred_cls = rpn_pred_cls.permute(0, 3, 1, 2)
+            #proposals = compute_rpn_proposals_fn(rpn_pred_cls.data, rpn_pred_loc.data, anchors)
             outputs['losses'] = [rpn_loss_cls, rpn_loss_loc]
             outputs['accuracy'] = [rpn_acc]
-            outputs['predict'] = [proposals]
+            #outputs['predict'] = [proposals]
         else:
             # rpn test
             compute_rpn_proposals_fn = partial_fn['rpn_proposal_fn']
@@ -148,6 +148,7 @@ class model(nn.Module):
             rpn_pred_cls = F.softmax(rpn_pred_cls.view(-1, 2), dim=1).view_as(rpn_pred_cls)
             rpn_pred_cls = rpn_pred_cls.permute(0, 3, 1, 2)
             proposals = compute_rpn_proposals_fn(rpn_pred_cls.data, rpn_pred_loc.data, anchors)
+            
             outputs['predict'] = [proposals, anchors]
         return outputs
 

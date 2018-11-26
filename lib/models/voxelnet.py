@@ -84,7 +84,7 @@ class Voxelnet(model):
     def RandomSampleing(self):
         pass
 
-    def feature_extractor(self, voxel_with_points, num_pts, leaf_out, voxel_indices, num_divisions):
+    def old_feature_extractor(self, voxel_with_points, num_pts, leaf_out, voxel_indices, num_divisions):
         batch, valid_voxels, num_T, channels = voxel_with_points.size()
         voxel_with_points_reshaped = voxel_with_points.permute(0,3,1,2)
         logger.debug("voxel_with_points size: {}".format(voxel_with_points.size()))
@@ -125,7 +125,7 @@ class Voxelnet(model):
         logger.debug("VFE to 3D feature, create_variable:{} {}, get indices:{}, assignment:{}".format(t1_0-t1, t1_1-t1_0, t1_2-t1_1, t2-t1_2))
         return out
 
-    def new_feature_extractor(self, voxel_with_points, num_pts, leaf_out, voxel_indices, num_divisions):
+    def feature_extractor(self, voxel_with_points, num_pts, leaf_out, voxel_indices, num_divisions):
         batch, valid_voxels, num_T, channels = voxel_with_points.size()
         voxel_with_points_reshaped = voxel_with_points.permute(0,3,1,2)
         logger.debug("voxel_with_points size: {}".format(voxel_with_points.size()))
