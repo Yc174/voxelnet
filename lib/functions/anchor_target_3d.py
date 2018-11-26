@@ -88,6 +88,21 @@ def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bb
 
             print("overlaps shape:", overlaps.shape)
 
+        elif rpn_iou_type == '2.5d':
+            ground_truth_bboxes = ground_truth_bboxes.reshape(B * G, -1)
+            # Convert anchors to 3d iou format for calculation
+            anchors_for_3d_iou = box_3d_encoder.box_3d_to_3d_iou_format(
+                anchors_overplane)
+
+            gt_boxes_for_3d_iou = box_3d_encoder.box_3d_to_3d_iou_format(ground_truth_bboxes)
+            overlaps = np.zeros((B, anchors_overplane.shape[0], G))
+            for b_ix in range(B):
+                for i, gt_box in enumerate(gt_boxes_for_3d_iou[b_ix * G:(b_ix + 1) * G]):
+                    if np.any(gt_box > 0):
+                        iou = evaluation.two_half_d_iou(gt_box, anchors_for_3d_iou)
+                    else:
+                        iou = np.zeros(anchors_overplane.shape[0])
+                    overlaps[b_ix, :, i] = iou
 
         else:
             raise ValueError('Invalid rpn_iou_type {}', rpn_iou_type)

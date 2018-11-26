@@ -43,15 +43,59 @@ def two_d_iou(box, boxes):
 
     return iou.round(3)
 
+def two_half_d_iou(box, boxes):
+    """Computes approximate 2.5D IOU on BEV between a 3D bounding box 'box' and a list
+        of 3D bounding boxes 'boxes'. All boxes are assumed to be aligned with
+        respect to gravity. Boxes are allowed to rotate only around their z-axis.
+
+        :param box: a numpy array of the form: [ry, l, w, h, tx, ty, tz]
+        :param boxes: a numpy array of the form:
+            [[ry, l, h, w, tx, ty, tz], [ry, l, w, h, tx, ty, tz]]
+
+        :return iou: a numpy array containing 3D IOUs between box and every element
+            in numpy array boxes.
+    """
+    if len(boxes.shape) == 1:
+        boxes = np.array([boxes])
+
+    box_diag = np.sqrt(np.square(box[1]) +
+                       np.square(box[2])) / 2
+
+    boxes_diag = np.sqrt(np.square(boxes[:, 1]) +
+                         np.square(boxes[:, 2])) / 2
+
+    dist = np.sqrt(np.square(boxes[:, 4] - box[4]) +
+                   np.square(boxes[:, 6] - box[6]))
+
+    non_empty = box_diag + boxes_diag >= dist
+
+    iou = np.zeros(len(boxes), np.float64)
+
+    if non_empty.any():
+        # height_int, _ = height_metrics(box, boxes[non_empty])
+        intersection = get_rectangular_metrics(box, boxes[non_empty])
+
+        vol_box = np.prod(box[1:3])
+
+        vol_boxes = np.prod(boxes[non_empty, 1:3], axis=1)
+
+        union = vol_box + vol_boxes - intersection
+
+        iou[non_empty] = intersection / union
+
+    if iou.shape[0] == 1:
+        iou = iou[0]
+
+    return iou
 
 def three_d_iou(box, boxes):
     """Computes approximate 3D IOU between a 3D bounding box 'box' and a list
     of 3D bounding boxes 'boxes'. All boxes are assumed to be aligned with
     respect to gravity. Boxes are allowed to rotate only around their z-axis.
 
-    :param box: a numpy array of the form: [ry, l, h, w, tx, ty, tz]
+    :param box: a numpy array of the form: [ry, l, w, h, tx, ty, tz]
     :param boxes: a numpy array of the form:
-        [[ry, l, h, w, tx, ty, tz], [ry, l, h, w, tx, ty, tz]]
+        [[ry, l, h, w, tx, ty, tz], [ry, l, w, h, tx, ty, tz]]
 
     :return iou: a numpy array containing 3D IOUs between box and every element
         in numpy array boxes.

@@ -312,7 +312,7 @@ def show_lidar_with_numpy_boxes(pc_rect, objects, calib, save_figure, save_figur
         filename = os.path.join(save_figure_dir, img_name)
         mlab.savefig(filename)
     time.sleep(0.03)
-    mlab.close()
+    # mlab.close()
 
 
 def show_lidar_on_image(pc_velo, img, calib, img_width, img_height):
