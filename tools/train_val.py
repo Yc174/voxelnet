@@ -259,9 +259,9 @@ def validate(dataset, dataloader, model, cfg, epoch=-1):
                     calib = Calibration(calib_dir)
 
                     # Show all LiDAR points. Draw 3d box in LiDAR point cloud
-                    # print(' -------- LiDAR points and 3D boxes in velodyne coordinate --------')
-                    # show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), gts_per_points_cloud, calib, color=(1,1,1))
-                    # input()
+                    print(' -------- LiDAR points and 3D boxes in velodyne coordinate --------')
+                    show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), gts_per_points_cloud, calib, save_figure=False,color=(1,1,1))
+                    input()
 
                     score_filter = rois_per_points_cloud[:, -1]>score_threshold
                     print('img: {}, proposals shape:{}'.format(img_ids[b_ix], rois_per_points_cloud[score_filter].shape))
@@ -281,8 +281,8 @@ def validate(dataset, dataloader, model, cfg, epoch=-1):
                     # input()
                     # anchors = outputs[1]
                     # total_anchors, _ = anchors.shape
-                    # idx = np.random.choice(total_anchors, 200)
-                    # show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), anchors[idx, :], calib,
+                    # idx = np.random.choice(total_anchors, 50)
+                    # show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), anchors[idx, :], calib, save_figure=False,
                     #                             color=(1, 1, 1))
                     # input()
 
