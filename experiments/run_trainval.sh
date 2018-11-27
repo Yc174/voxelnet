@@ -16,4 +16,5 @@ CUDA_VISIBLE_DEVICES=${GPU_ID} python tools/train_val.py --config=experiments/co
     --lr=0.01 \
     --batch_size=6 \
     --workers=3 \
+    --seed=10 \
     --dist=1

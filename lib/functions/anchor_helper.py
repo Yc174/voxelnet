@@ -17,14 +17,14 @@ def get_anchors_over_plane(featmap_h, featmap_w, area_extents, anchor_3d_sizes, 
     x_centers = np.array(np.arange(x_start, x_end, step=anchor_stride_x),
                          dtype=np.float32)
 
-    z_start = area_extents[2][1] - anchor_stride[1] / 2.0
-    z_end = area_extents[2][0]
-    z_centers = np.array(np.arange(z_start, z_end, step=-anchor_stride_z),
-                         dtype=np.float32)
-    # z_start = area_extents[2][0] + anchor_stride[1] / 2.0
-    # z_end = area_extents[2][1]
-    # z_centers = np.array(np.arange(z_start, z_end, step=anchor_stride_z),
+    # z_start = area_extents[2][1] - anchor_stride[1] / 2.0
+    # z_end = area_extents[2][0]
+    # z_centers = np.array(np.arange(z_start, z_end, step=-anchor_stride_z),
     #                      dtype=np.float32)
+    z_start = area_extents[2][0] + anchor_stride[1] / 2.0
+    z_end = area_extents[2][1]
+    z_centers = np.array(np.arange(z_start, z_end, step=anchor_stride_z),
+                         dtype=np.float32)
     logger.debug('x shape: %d, z shape: %d'%(len(x_centers), len(z_centers)))
     # get anchors on one grid
     anchors = get_anchors(anchor_3d_sizes, anchor_rotations)
@@ -32,8 +32,8 @@ def get_anchors_over_plane(featmap_h, featmap_w, area_extents, anchor_3d_sizes, 
     # shift_x = np.arange(0, featmap_w) * anchor_stride
     # shift_y = np.arange(0, featmap_h) * anchor_stride
     # [featmap_h, featmap_w]
-    shift_x, shift_z = np.meshgrid(x_centers, z_centers)
-    # shift_z, shift_x = np.meshgrid(z_centers, x_centers)
+    # shift_x, shift_z = np.meshgrid(x_centers, z_centers)
+    shift_z, shift_x = np.meshgrid(z_centers, x_centers)
     shifts = np.vstack((shift_x.ravel(), shift_z.ravel())).transpose()
 
     # a, b, c, d = ground_plane

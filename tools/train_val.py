@@ -3,6 +3,7 @@ from __future__ import print_function
 import os
 import json
 import argparse
+import random
 
 import numpy as np
 import torch
@@ -57,6 +58,7 @@ parser.add_argument('--lr', '--learning-rate', default=0.001, type=float,
                     metavar='LR', help='initial learning rate')
 parser.add_argument('--dist', dest='dist', default=1, type=int,
                     help='distributed training or not')
+parser.add_argument('--seed', type=int, default=None, help='random seed')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
 parser.add_argument('--weight_decay', '--wd', default=1e-4, type=float,
@@ -70,6 +72,12 @@ def load_config(config_path):
         if key != 'shared':
             cfg[key].update(cfg['shared'])
     return cfg
+
+def set_random_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
 
 def build_data_loader(dataset, cfg):
     logger = logging.getLogger('global')
@@ -94,6 +102,9 @@ def main():
     log_helper.init_log('global', args.save_dir, logging.INFO)
     logger = logging.getLogger('global')
     cfg = load_config(args.config)
+    if args.seed is not None:
+        logger.info('Set random seed to {}'.format(args.seed))
+        set_random_seed(args.seed)
     device = torch.device("cuda:0")
     train_dataset, val_dataset, train_loader, val_loader = build_data_loader(args.dataset, cfg)
     model = Voxelnet(cfg=cfg)
@@ -160,6 +171,7 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
     t0 = time.time()
     for iter, _input in enumerate(dataloader):
         lr = adjust_learning_rate(optimizer, 1, gradual=True)
+        img_ids = _input[10]
         x = {
             'cfg': cfg,
             # 'image': torch.autograd.Variable(_input[0]).cuda(),
@@ -194,8 +206,8 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
         t3 = time.time()
         # print('loss shape:', loss.size(), loss[0].size())
         # print('rpn_accuracy:', rpn_accuracy.size())
-        logger.info('Epoch: [%d][%d/%d] LR:%f ForwardTime: %.3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f rpn_acc: %.5f)'%
-                    (epoch, iter, len(dataloader), lr, t2-t1, loss[0].cpu().data.numpy(), rpn_cls_loss[0].cpu().data.numpy(), rpn_loc_loss[0].cpu().data.numpy(), rpn_accuracy.cpu().data.numpy()))
+        logger.info('Epoch: [%d][%d/%d] LR:%f ForwardTime: %.3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f img:%s rpn_acc: %.5f)'%
+                    (epoch, iter, len(dataloader), lr, t2-t1, loss[0].cpu().data.numpy(), rpn_cls_loss[0].cpu().data.numpy(), rpn_loc_loss[0].cpu().data.numpy(), img_ids,rpn_accuracy.cpu().data.numpy()))
         log_helper.print_speed((epoch - 1) * len(dataloader) + iter + 1, t3 - t0, args.epochs * len(dataloader))
         t0 = t3
 
