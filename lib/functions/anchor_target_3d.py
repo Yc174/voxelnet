@@ -21,8 +21,9 @@ def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bb
             negative_iou_thresh, ignore_iou_thresh,positive_iou_thresh,
             positive_percent, rpn_batch_size
         }
-        feature_size: IntTensor, [4]. i.e. batch, num_anchors * 8, height, width
-        ground_truth_bboxes: FloatTensor, [batch, max_num_gt_bboxes, 5]
+        feature_size: IntTensor, [4]. i.e. batch, num_anchors * 7, height, width
+        anchors_overplane: numpy.ndarray, [K*A, 7]
+        ground_truth_bboxes: FloatTensor, [batch, max_num_gt_bboxes, 7]
         image_info: FloatTensor, [batch, 3]
         ignore_regions: FloatTensor, [batch, max_num_ignore_regions, 4]
     :returns

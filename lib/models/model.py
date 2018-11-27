@@ -77,12 +77,6 @@ class model(nn.Module):
                 ground_truth_bboxes=ground_truth_bboxes,
                 ignore_regions=ignore_regions,
                 image_info=image_info)
-        #     partial_fn['proposal_target_fn'] = functools.partial(
-        #         compute_proposal_targets,
-        #         cfg=cfg['train_proposal_target_cfg'],
-        #         ground_truth_bboxes=ground_truth_bboxes,
-        #         ignore_regions=ignore_regions,
-        #         image_info=image_info)
             partial_fn['rpn_proposal_fn'] = functools.partial(
                 rpn_proposal.compute_rpn_proposals,
                 cfg=cfg['train_rpn_proposal_cfg'],
@@ -92,10 +86,7 @@ class model(nn.Module):
                 rpn_proposal.compute_rpn_proposals,
                 cfg=cfg['test_rpn_proposal_cfg'],
                 image_info=image_info)
-        #     partial_fn['predict_bbox_fn'] = functools.partial(
-        #         compute_predicted_bboxes,
-        #         image_info = image_info,
-        #         cfg=cfg['test_predict_bbox_cfg'])
+
         return partial_fn
 
     def forward(self, input):

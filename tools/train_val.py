@@ -8,6 +8,7 @@ import random
 import numpy as np
 import torch
 import torch.nn as nn
+from tensorboardX import SummaryWriter
 import logging
 import time
 from multiprocessing import Process
@@ -105,6 +106,10 @@ def main():
     if args.seed is not None:
         logger.info('Set random seed to {}'.format(args.seed))
         set_random_seed(args.seed)
+
+    writer = SummaryWriter(log_dir=args.save_dir+'/tensorboard')
+    logger.info('Save loss curve to {}'.format(args.save_dir+'/tensorboard'))
+
     device = torch.device("cuda:0")
     train_dataset, val_dataset, train_loader, val_loader = build_data_loader(args.dataset, cfg)
     model = Voxelnet(cfg=cfg)
@@ -136,10 +141,10 @@ def main():
     for epoch in range(args.start_epoch, args.epochs):
         if epoch+1 in args.step_epochs:
             lr = adjust_learning_rate(optimizer, 0.1, gradual= True)
-        train(train_loader, model, optimizer, epoch, cfg)
+        train(train_loader, model, optimizer, epoch+1, cfg, writer)
         # evaluate on validation set
         if (epoch + 1) % 5 == 0 or epoch + 1 == args.epochs:
-            recall = validate(val_dataset, val_loader, model, cfg, epoch=epoch)
+            recall = validate(val_dataset, val_loader, model, cfg, epoch=epoch + 1)
 
         # remember best prec@1 and save checkpoint
         is_best = recall > best_recall
@@ -154,10 +159,10 @@ def main():
             }, is_best,
             os.path.join(args.save_dir, 'checkpoint_e%d.pth' % (epoch + 1)))
         logger.info('recall %f(%f)' % (recall, best_recall))
+    writer.close()
 
 
-
-def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
+def train(dataloader, model, optimizer, epoch, cfg, writer, warmup=False):
     logger = logging.getLogger('global')
     if torch.cuda.device_count()>1:
        print("Let's use", torch.cuda.device_count(), "GPUs!")
@@ -209,6 +214,9 @@ def train(dataloader, model, optimizer, epoch, cfg, warmup=False):
         logger.info('Epoch: [%d][%d/%d] LR:%f ForwardTime: %.3f Loss: %0.5f (rpn_cls: %.5f rpn_loc: %.5f img:%s rpn_acc: %.5f)'%
                     (epoch, iter, len(dataloader), lr, t2-t1, loss[0].cpu().data.numpy(), rpn_cls_loss[0].cpu().data.numpy(), rpn_loc_loss[0].cpu().data.numpy(), img_ids,rpn_accuracy.cpu().data.numpy()))
         log_helper.print_speed((epoch - 1) * len(dataloader) + iter + 1, t3 - t0, args.epochs * len(dataloader))
+        writer.add_scalar('total_loss', loss[0].cpu().data.numpy(), (epoch - 1) * len(dataloader) + iter + 1)
+        writer.add_scalar('rpn_cls_loss', rpn_cls_loss[0].cpu().data.numpy(), (epoch - 1) * len(dataloader) + iter + 1)
+        writer.add_scalar('rpn_loc_loss', rpn_loc_loss[0].cpu().data.numpy(), (epoch - 1) * len(dataloader) + iter + 1)
         t0 = t3
 
 def validate(dataset, dataloader, model, cfg, epoch=-1):
