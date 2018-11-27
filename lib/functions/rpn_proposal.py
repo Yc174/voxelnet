@@ -18,8 +18,8 @@ def compute_rpn_proposals(conv_cls, conv_loc, anchors_overplane, cfg, image_info
     '''
     :argument
         cfg: configs
-        conv_cls: FloatTensor, [batch, num_anchors * x, h, w], conv output of classification
-        conv_loc: FloatTensor, [batch, num_anchors * 4, h, w], conv output of localization
+        conv_cls: FloatTensor, [batch, num_anchors * 2, h, w], conv output of classification
+        conv_loc: FloatTensor, [batch, num_anchors * 7, h, w], conv output of localization
         image_info: FloatTensor, [batch, 3], image size
     :returns
         proposals: Variable, [N, 5], 2-dim: batch_ix, x1, y1, x2, y2

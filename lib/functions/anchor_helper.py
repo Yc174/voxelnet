@@ -46,6 +46,7 @@ def get_anchors_over_plane(featmap_h, featmap_w, area_extents, anchor_3d_sizes, 
 
     A = anchors.shape[0]
     K = shifts.shape[0]
+    assert K == featmap_h * featmap_w
     anchors_overplane = (anchors.reshape((1, A, 7)) +
                     _shifts.reshape((1, K, 7)).transpose((1, 0, 2)))
     anchors_overplane = anchors_overplane.reshape((K * A, 7))

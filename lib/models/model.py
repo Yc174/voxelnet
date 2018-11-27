@@ -48,10 +48,10 @@ class model(nn.Module):
         '''
         :param compute_anchor_targets_fn: functions to produce anchors' learning targets.
         :param rpn_pred_cls: [B, num_anchors * 2, h, w], output of rpn for classification.
-        :param rpn_pred_loc: [B, num_anchors * 4, h, w], output of rpn for localization.
+        :param rpn_pred_loc: [B, num_anchors * 7, h, w], output of rpn for localization.
         :return: loss of classification and localization, respectively.
         '''
-        # [B, num_anchors * 2, h, w], [B, num_anchors * 4, h, w]
+        # [B, num_anchors * 2, h, w], [B, num_anchors * 7, h, w]
         cls_targets, loc_targets, loc_masks, loc_normalizer = \
                 compute_anchor_targets_fn(rpn_pred_loc.size(), anchors)
 
@@ -149,7 +149,7 @@ def smooth_l1_loss_with_sigma(pred, targets, sigma=3.0):
     abs_diff = torch.abs(diff)
     smoothL1_sign = (abs_diff < 1. / sigma_2).detach().float()
     loss = torch.pow(diff, 2) * sigma_2 / 2. * smoothL1_sign \
-            + abs_diff - 0.5 / sigma_2 * (1. - smoothL1_sign)
+            + (abs_diff - 0.5 / sigma_2) * (1. - smoothL1_sign)
     reduced_loss = torch.sum(loss)
     return reduced_loss
 
