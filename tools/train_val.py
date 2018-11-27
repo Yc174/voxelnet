@@ -167,7 +167,7 @@ def train(dataloader, model, optimizer, epoch, cfg, writer, warmup=False):
     if torch.cuda.device_count()>1:
        print("Let's use", torch.cuda.device_count(), "GPUs!")
        #model = nn.parallel.DistributedDataParallel(model)
-       model = nn. DataParallel(model, device_ids=range(torch.cuda.device_count()))
+       model = nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
     #model.to(device)
 
     model.cuda()

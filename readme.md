@@ -25,6 +25,7 @@ This is a reproduction of voxelnet based on PyTorch.  The original can be referr
 - Python 3.6
 - PyTorch 0.4.0 and torchvision
 - Cython
+- tensorboard
 - [mayavi](https://docs.enthought.com/mayavi/mayavi/)
 
 ### Install VoxelNet
@@ -47,7 +48,7 @@ sh build.sh
 
 ### Prepare Kitti dataset.
 
-It is recommended to symlink the dataset root to `$MMDETECTION/data`.
+It is recommended to symlink the dataset root to `$voxelnet/datasets`.
 
 ```
 voxelnet
@@ -64,6 +65,7 @@ voxelnet
 
 ## Train a model
 - [x] Multi GPUs training
+- [x] use tensorboard to visualize loss
 - [x] use validate dataset
 
 
