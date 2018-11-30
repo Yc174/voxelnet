@@ -164,7 +164,9 @@ def show_image_with_boxes(img, objects, calib, show3d=True, save_figure=False, s
     if not isinstance(objects, np.ndarray):
         Image.fromarray(img1).show()
     if show3d:
-        Image.fromarray(img2).show()
+        # img2_tmp = Image.fromarray(img2)
+        # img2_tmp.show()
+        cv2.imshow(img_name, img2)
         if save_figure:
             if save_figure_dir != '':
                 save_figure_dir = os.path.join(root_dir(), save_figure_dir)
@@ -173,7 +175,11 @@ def show_image_with_boxes(img, objects, calib, show3d=True, save_figure=False, s
                 os.makedirs(save_figure_dir)
                 print("done!!!!")
             filename = os.path.join(save_figure_dir, img_name)
+            img2 = cv2.resize(img2, (1242,376), interpolation=cv2.INTER_CUBIC)
             cv2.imwrite(filename, img2)
+        # img2_tmp.close()
+        time.sleep(0.03)
+        # cv2.destroyAllWindows()
 
 def get_lidar_in_image_fov(pc_velo, calib, xmin, ymin, xmax, ymax,
                            return_more=False, clip_distance=2.0):

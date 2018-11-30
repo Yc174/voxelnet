@@ -13,7 +13,7 @@ from multiprocessing import Process
 
 from lib.dataset.kitti_dataset_raw_data import KittiDataset, KittiDataloader
 from lib.dataset.kitti_util import Calibration
-from lib.dataset.kitti_object import show_lidar_with_numpy_boxes
+from lib.dataset.kitti_object import show_lidar_with_numpy_boxes, show_image_with_boxes
 from lib.models.voxelnet import Voxelnet
 from lib.functions import log_helper
 from lib.functions import bbox_helper
@@ -133,7 +133,7 @@ def validate(dataset, dataloader, model, cfg, epoch=-1):
 
         x = {
             'cfg': cfg,
-            # 'image': torch.autograd.Variable(_input[0]).cuda(),
+            'image': _input[0],
             'points': _input[1],
             'indices': _input[2],
             'num_pts': _input[3],
@@ -169,9 +169,16 @@ def validate(dataset, dataloader, model, cfg, epoch=-1):
                 score_filter = rois_per_points_cloud[:, -1]>score_threshold
                 print('img: {}, proposals shape:{}'.format(img_ids[b_ix], rois_per_points_cloud[score_filter].shape))
 
+                img = x['image'][b_ix].numpy() * 255.
+                img = img.astype(np.uint8)
+                img = np.array(np.transpose(img, (1, 2, 0)))
+                show_image_with_boxes(img, rois_per_points_cloud[score_filter, 1:1 + 7], calib, True,
+                                      save_figure=args.save_as_figure, save_figure_dir=args.figdir,
+                                      img_name='img_%06d.jpg' % (int(img_ids[b_ix])))
+
                 show_lidar_with_numpy_boxes(x['points'][b_ix, :, 0:3].numpy(), rois_per_points_cloud[score_filter, 1:1+7][:10],
                                             calib, save_figure=args.save_as_figure, save_figure_dir=args.figdir,
-                                            img_name='%s.jpg'%(img_ids[b_ix]),
+                                            img_name='points_%06d.jpg'%(int(img_ids[b_ix])),
                                             color=(1, 1, 1))
                 # input()
                 # anchors = outputs[1]

@@ -1,4 +1,6 @@
 import torch
+import torch.nn.functional as F
+import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, Dataset
 import numpy as np
 import os
@@ -56,10 +58,10 @@ class KittiDataset(Dataset):
         voxel_grid = VoxelGrid()
         voxel_grid.voxelize(valid_pc_rect, voxel_size=self.voxel_size, extents=self.area_extents, create_leaf_layout=True, num_T=self.num_T)
         t4 = time.time()
-        # to_tensor = transforms.ToTensor()
-        # img = to_tensor(img)
+        to_tensor = transforms.ToTensor()
+        img = to_tensor(img)
         logger.debug('sys used time, load data: %.5f, get gt: %.5f,get valid points: %.5f, voxel_grid: %.5f'%(t1-t0, 0, t3-t1,t4-t3))
-        return [None,
+        return [img.unsqueeze(0),
                 None,
                 None,
                 [img_height, img_width],
@@ -84,7 +86,7 @@ class KittiDataloader(DataLoader):
         t0 = time.time()
         batch_size = len(batch)
         zip_batch = list(zip(*batch))
-        # images = zip_batch[0]
+        images = zip_batch[0]
         img_info = zip_batch[3]
         s_points = zip_batch[4]
         unique_indices = zip_batch[5]
@@ -96,8 +98,8 @@ class KittiDataloader(DataLoader):
         img_ids = zip_batch[11]
         num_divisions = zip_batch[12]
 
-        # max_img_h = max([_.shape[-2] for _ in images])
-        # max_img_w = max([_.shape[-1] for _ in images])
+        max_img_h = max([_.shape[-2] for _ in images])
+        max_img_w = max([_.shape[-1] for _ in images])
         max_points = max([_.shape[0] for _ in s_points])
         max_indices = max([_.shape[0] for _ in unique_indices])
         # max_num_pts = max([_.shape[0] for _ in num_pts_in_voxel])
@@ -113,10 +115,10 @@ class KittiDataloader(DataLoader):
         padded_voxel_points = []
 
         for b_ix in range(batch_size):
-            # img = images[b_ix]
-            # # pad zeros to right bottom of each image
-            # pad_size = (0, max_img_w - img.shape[-1], 0, max_img_h - img.shape[-2])
-            # padded_images.append(F.pad(img, pad_size, 'constant', 0).data.cpu())
+            img = images[b_ix]
+            # pad zeros to right bottom of each image
+            pad_size = (0, max_img_w - img.shape[-1], 0, max_img_h - img.shape[-2])
+            padded_images.append(F.pad(img, pad_size, 'constant', 0).data.cpu())
 
             # pad zeros to gt_bboxes
             # gt_bboxes_2d = ground_truth_bboxes_2d[b_ix]
@@ -155,7 +157,7 @@ class KittiDataloader(DataLoader):
             new_voxel_points[:voxel_points.shape[0], :] = voxel_points
             padded_voxel_points.append(new_voxel_points)
 
-        # padded_images = torch.cat(padded_images, dim = 0)
+        padded_images = torch.cat(padded_images, dim = 0)
         padded_gt_bboxes_2d = torch.zeros([batch_size, 1, 4])
         padded_gt_bboxes_3d = torch.zeros([batch_size, 1, 8])
         padded_points = torch.from_numpy(np.stack(padded_points, axis= 0))
