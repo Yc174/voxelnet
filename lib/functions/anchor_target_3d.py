@@ -22,13 +22,13 @@ def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bb
             positive_percent, rpn_batch_size
         }
         feature_size: IntTensor, [4]. i.e. batch, num_anchors * 7, height, width
-        anchors_overplane: numpy.ndarray, [K*A, 7]
+        anchors_overplane: numpy.ndarray, [K*A, 7], K=height*width
         ground_truth_bboxes: FloatTensor, [batch, max_num_gt_bboxes, 7]
         image_info: FloatTensor, [batch, 3]
-        ignore_regions: FloatTensor, [batch, max_num_ignore_regions, 4]
+        ignore_regions: FloatTensor, [batch, max_num_ignore_regions, 7]
     :returns
         cls_targets: Variable, [batch, num_anchors * 1, height, width]
-        loc_targets, loc_masks: Variable, [batch, num_anchors * 4, height, width]
+        loc_targets, loc_masks: Variable, [batch, num_anchors * 7, height, width]
     '''
     ground_truth_bboxes, image_info, ignore_regions = \
         map(to_np_array, [ground_truth_bboxes, image_info, ignore_regions])
@@ -87,7 +87,7 @@ def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bb
                         iou = np.zeros(anchors_overplane.shape[0])
                     overlaps[b_ix, :, i] = iou
 
-            print("overlaps shape:", overlaps.shape)
+            logger.debug('overlaps shape:{}'.format(overlaps.shape))
 
         elif rpn_iou_type == '2.5d':
             ground_truth_bboxes = ground_truth_bboxes.reshape(B * G, -1)
@@ -110,7 +110,8 @@ def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bb
 
         ground_truth_bboxes = ground_truth_bboxes.reshape(B, G, -1)
 
-        # shape of [B, K*A]
+        # overlaps shape: [B K*A G]
+        # argmax_overlaps shape of [B, K*A]
         argmax_overlaps = overlaps.argmax(axis = 2)
         max_overlaps = overlaps.max(axis = 2)
 
@@ -173,6 +174,6 @@ def compute_anchor_targets(feature_size, anchors_overplane, cfg, ground_truth_bb
         torch.from_numpy(loc_targets).float().view(B, featmap_h, featmap_w, A * 7).permute(0, 3, 1, 2)).cuda().contiguous()
     loc_masks = Variable(
         torch.from_numpy(loc_masks).float().view(B, featmap_h, featmap_w, A * 7).permute(0, 3, 1, 2)).cuda().contiguous()
-    loc_nomalizer = max(1,len(np.where(labels >= 0)[0]))
+    loc_nomalizer = max(1,len(np.where(labels > 0)[0]))
     logger.debug('positive anchors:%d' % len(pos_b_ix))
     return cls_targets, loc_targets, loc_masks, loc_nomalizer
